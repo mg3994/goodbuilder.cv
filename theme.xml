@@ -398,6 +398,11 @@
     .template-infographic { padding: 2rem; display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; }
     .template-minimal-grid { padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 
+
+    /* Page Break Controls */
+    .page-break-before { page-break-before: always !important; break-before: page !important; margin-top: 2rem !important; }
+    .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+
     @media print {
       body { background: #ffffff !important; margin: 0 !important; padding: 0 !important; }
       .app-header, .editor-panel, .preview-toolbar, .mobile-view-toggle, .blogger-hidden-section { display: none !important; }
@@ -476,6 +481,7 @@
         <button class='editor-tab-btn' onclick='switchTab("hobbies")'><i class='fa-solid fa-heart'></i> Hobbies</button>
         <button class='editor-tab-btn' onclick='switchTab("custom")'><i class='fa-solid fa-folder-plus'></i> Custom</button>
 
+        <button class='editor-tab-btn' onclick='switchTab("aienhancer")'><i class='fa-solid fa-wand-magic-sparkles'></i> AI Suggestions</button>
         <button class='editor-tab-btn' onclick='switchTab("coverletter")'><i class='fa-solid fa-envelope-open-text'></i> Cover Letter</button>
         <button class='editor-tab-btn' onclick='switchTab("ats")'><i class='fa-solid fa-chart-line'></i> ATS Score</button>
         <button class='editor-tab-btn' onclick='switchTab("studio")'><i class='fa-solid fa-palette'></i> Studio</button>
@@ -958,6 +964,55 @@
         const saved = localStorage.getItem('goodbuilder_custom_templates');
         userCustomTemplates = saved ? JSON.parse(saved) : [];
       } catch (e) { userCustomTemplates = []; }
+    }
+
+
+    const industryPresets = {
+      pm: {
+        personal: { fullName: "Taylor Swift-Manager", jobTitle: "Senior Product Manager", email: "taylor.pm@goodbuilder.cv", phone: "+1 (555) 345-6789", location: "Seattle, WA", website: "https://goodbuilder.cv/taylorpm", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300" },
+        summary: "Strategic Senior Product Manager with 7+ years of experience leading cross-functional teams to launch enterprise SaaS products that drove $12M+ in ARR growth.",
+        experience: [
+          { id: "pm1", title: "Senior Product Manager", company: "CloudScale Inc", location: "Seattle, WA", startDate: "2020-04", endDate: "", current: true, description: "• Spearheaded product strategy for B2B analytics platform, increasing monthly active users by 65%.\n• Managed product roadmap and prioritized backlog across 3 agile engineering squads." }
+        ],
+        education: [{ id: "pmed1", degree: "M.B.A.", institution: "University of Washington", location: "Seattle, WA", startDate: "2016-09", endDate: "2018-06", gpa: "3.8", description: "Focus on Technology Management and Product Strategy." }],
+        skills: [{ id: "pmsk1", name: "Product Roadmap & Strategy", level: "95" }, { id: "pmsk2", name: "Agile & Scrum", level: "90" }, { id: "pmsk3", name: "User Research & A/B Testing", level: "88" }],
+        projects: [{ id: "pmproj1", title: "SaaS Onboarding Optimization", link: "https://cloudscale.com", tech: "Mixpanel, Figma, Jira", description: "Redesigned self-serve onboarding flow, boosting 14-day conversion rate by 24%." }],
+        languages: [{ id: "pmlang1", name: "English", level: "Native" }],
+        certifications: [{ id: "pmcert1", title: "Certified Scrum Product Owner (CSPO)", issuer: "Scrum Alliance", date: "2019-05", url: "" }],
+        socials: [{ id: "pmsoc1", platform: "LinkedIn", username: "in/taylorpm-product", url: "https://linkedin.com" }],
+        references: [], hobbies: [{ id: "pmhob1", name: "Podcasting" }], customSections: [],
+        sectionOrder: ["summary", "experience", "education", "skills", "projects", "certifications", "socials"],
+        settings: { template: "executive", accentColor: "#0f172a", fontFamily: "Inter", fontSize: "14px", margin: "normal" }
+      },
+      data: {
+        personal: { fullName: "Jordan Lee", jobTitle: "Senior Data Scientist & AI Specialist", email: "jordan.lee@goodbuilder.cv", phone: "+1 (555) 456-7890", location: "Boston, MA", website: "https://goodbuilder.cv/jordanlee", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300" },
+        summary: "Data Scientist with expertise in Machine Learning, Large Language Models (LLMs), predictive analytics, and big data pipelines delivering scalable AI solutions.",
+        experience: [
+          { id: "ds1", title: "Senior Data Scientist", company: "DataAI Tech", location: "Boston, MA", startDate: "2021-01", endDate: "", current: true, description: "• Built recommendation engine using PyTorch and Spark, driving 18% lift in customer engagement.\n• Deployed automated NLP pipelines for sentiment analysis processing 5M+ daily user reviews." }
+        ],
+        education: [{ id: "dsed1", degree: "M.S. in Data Science & Machine Learning", institution: "MIT", location: "Cambridge, MA", startDate: "2018-09", endDate: "2020-05", gpa: "3.95", description: "Thesis on Deep Reinforcement Learning for Algorithmic Optimization." }],
+        skills: [{ id: "dssk1", name: "Python, PyTorch & TensorFlow", level: "95" }, { id: "dssk2", name: "SQL, Spark & Snowflake", level: "92" }, { id: "dssk3", name: "LLMs & RAG Pipelines", level: "85" }],
+        projects: [{ id: "dsproj1", title: "OpenSource Sentiment LLM", link: "https://github.com/jordanlee/sentiment-llm", tech: "Python, HuggingFace, Docker", description: "Fine-tuned open-source model achieving 94% accuracy on domain-specific classification." }],
+        languages: [{ id: "dslang1", name: "English", level: "Native" }],
+        certifications: [{ id: "dscert1", title: "AWS Certified Machine Learning – Specialty", issuer: "AWS", date: "2021-11", url: "" }],
+        socials: [{ id: "dssoc1", platform: "GitHub", username: "jordanlee-ai", url: "https://github.com" }],
+        references: [], hobbies: [{ id: "dshob1", name: "Kaggle Competitions" }], customSections: [],
+        sectionOrder: ["summary", "experience", "skills", "projects", "education", "certifications"],
+        settings: { template: "sleekdark", accentColor: "#059669", fontFamily: "Roboto", fontSize: "14px", margin: "normal" }
+      }
+    };
+
+    function loadIndustryPreset(key) {
+      if (!key) return;
+      if (confirm(`Load the ${key.toUpperCase()} Industry Preset? Current unsaved changes will be replaced.`)) {
+        const preset = industryPresets[key] || sampleData;
+        resumeData = JSON.parse(JSON.stringify(preset));
+        syncFormFields();
+        renderAllLists();
+        renderResume();
+        saveToLocalStorage();
+        document.getElementById("select-preset-industry").value = "";
+      }
     }
 
     function loadSampleData() {
@@ -1845,6 +1900,48 @@
           ${item.warnings.length ? item.warnings.map(w => `<div style="color:#d97706; font-size:0.75rem;"><i class="fa-solid fa-triangle-exclamation"></i> ${escapeXml(w)}</div>`).join("") : `<div style="color:#10b981; font-size:0.75rem;"><i class="fa-solid fa-check"></i> Great impact bullet point!</div>`}
         </div>
       `).join("");
+    }
+
+
+    function analyzeJobKeywords(jdText) {
+      const resultsBox = document.getElementById("ats-keyword-match-results");
+      if (!resultsBox) return;
+      if (!jdText || jdText.trim().length < 20) {
+        resultsBox.innerHTML = `<div style="font-size:0.8rem; color:#94a3b8;">Paste a job description above to calculate keyword match rate.</div>`;
+        return;
+      }
+
+      // Build resume corpus text
+      const p = resumeData.personal;
+      let resumeCorpus = `${p.fullName} ${p.jobTitle} ${resumeData.summary} ` +
+        (resumeData.experience || []).map(e => `${e.title} ${e.company} ${e.description}`).join(" ") + " " +
+        (resumeData.skills || []).map(s => s.name).join(" ") + " " +
+        (resumeData.projects || []).map(pr => `${pr.title} ${pr.tech} ${pr.description}`).join(" ");
+
+      resumeCorpus = resumeCorpus.toLowerCase();
+
+      // Extract unique words > 3 letters from JD
+      const stopwords = new Set(["the", "and", "for", "with", "that", "this", "from", "have", "your", "will", "are", "their", "about", "work", "must", "they", "been", "team"]);
+      const jdWords = jdText.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(w => w.length > 3 && !stopwords.has(w));
+      const wordCounts = {};
+      jdWords.forEach(w => wordCounts[w] = (wordCounts[w] || 0) + 1);
+
+      const topKeywords = Object.keys(wordCounts).sort((a,b) => wordCounts[b] - wordCounts[a]).slice(0, 15);
+      let matchedCount = 0;
+      const keyItems = topKeywords.map(kw => {
+        const found = resumeCorpus.includes(kw);
+        if (found) matchedCount++;
+        return `<span style="background:${found ? "#dcfce7" : "#fee2e2"}; color:${found ? "#166534" : "#991b1b"}; padding:2px 8px; border-radius:12px; font-size:0.75rem; font-weight:600; margin-right:4px; margin-bottom:4px; display:inline-block;">${found ? "✓" : "✗"} ${escapeXml(kw)}</span>`;
+      });
+
+      const matchPercentage = topKeywords.length ? Math.round((matchedCount / topKeywords.length) * 100) : 0;
+
+      resultsBox.innerHTML = `
+        <div style="font-size:0.85rem; font-weight:700; color:#0f172a; margin-bottom:0.5rem;">
+          Keyword Match Rate: <span style="color:${matchPercentage >= 70 ? "#10b981" : "#d97706"};">${matchPercentage}%</span> (${matchedCount}/${topKeywords.length} terms found)
+        </div>
+        <div>${keyItems.join("")}</div>
+      `;
     }
 
     function calculateATSScore() {
