@@ -1,0 +1,7 @@
+name = "goodbuilder-cv-backend"
+main = "src/index.ts"
+compatibility_date = "2023-12-01"
+
+[vars]
+BLOGGER_BLOG_ID = "YOUR_BLOGGER_BLOG_ID"
+MAX_FREE_RESUMES = "5"

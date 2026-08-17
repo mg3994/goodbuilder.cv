@@ -1,0 +1,19 @@
+{
+  "name": "goodbuilder-cv-backend",
+  "version": "1.0.0",
+  "description": "Hono Cloudflare Worker API for Good Builder CV - Firebase Auth & Blogger v3 Sync",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "hono": "^3.12.0",
+    "firebase-admin": "^11.11.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.22.0"
+  }
+}

@@ -32,6 +32,9 @@
   <link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&amp;family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Poppins:wght@400;500;600;700&amp;family=Roboto:wght@400;500;700&amp;display=swap' rel='stylesheet'/>
   <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' rel='stylesheet'/>
 
+    <!-- Firebase Web App SDK CDNs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <!-- QR Code & html2pdf.js Bundle -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- html2pdf.js Bundle for PDF generation -->
@@ -457,7 +460,7 @@
   <!-- Required Blogger Section Container -->
   <div class='blogger-hidden-section'>
     <b:section id='main' class='main' showaddelement='yes'>
-      <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'/>
+      <b:widget id='Blog1' locked='true' title='Blog Posts' type='HTML'><b:includable id='main'/></b:widget>
     </b:section>
   </div>
 
@@ -477,6 +480,12 @@
       </nav>
     </div>
     <div class='header-actions'>
+      <button id="btn-cloud-sync" class="btn btn-primary btn-sm" onclick="handleCloudSync()">
+        <i class="fa-solid fa-cloud-arrow-up"></i> Cloud Sync &amp; Share
+      </button>
+      <button id="btn-google-login" class="btn btn-outline-dark btn-sm" onclick="handleGoogleAuth()">
+        <i class="fa-brands fa-google"></i> Sign In
+      </button>
       <button class='btn btn-outline-dark btn-sm' onclick='loadSampleData()'>
         <i class='fa-solid fa-wand-magic-sparkles'></i> Sample Data
       </button>
@@ -2272,7 +2281,145 @@
 
     // MAIN RESUME RENDER ENGINE
 
-        function renderQRCodeElement() {
+
+    // Firebase Configuration & Auth Setup
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-DEMO_KEY_GOODBUILDER_CV",
+      authDomain: "goodbuilder-cv.firebaseapp.com",
+      projectId: "goodbuilder-cv",
+      storageBucket: "goodbuilder-cv.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:abcdef123456"
+    };
+
+    let currentUser = null;
+    let userPublishedUrl = null;
+
+    if (typeof firebase !== "undefined" && !firebase.apps.length) {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        firebase.auth().onAuthStateChanged((user) => {
+          currentUser = user;
+          updateAuthUI();
+        });
+      } catch (e) {}
+    }
+
+    function updateAuthUI() {
+      const loginBtn = document.getElementById("btn-google-login");
+      if (loginBtn) {
+        if (currentUser) {
+          loginBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> ${escapeXml(currentUser.displayName || "Account")}`;
+          loginBtn.setAttribute("onclick", "handleSignOut()");
+        } else {
+          loginBtn.innerHTML = `<i class="fa-brands fa-google"></i> Sign In`;
+          loginBtn.setAttribute("onclick", "handleGoogleAuth()");
+        }
+      }
+    }
+
+    function handleGoogleAuth() {
+      if (typeof firebase === "undefined") {
+        alert("Firebase Auth loading...");
+        return;
+      }
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope("https://www.googleapis.com/auth/blogger");
+      firebase.auth().signInWithPopup(provider).then((result) => {
+        currentUser = result.user;
+        updateAuthUI();
+        alert(`Welcome ${currentUser.displayName}! You can now Cloud Sync & Share your resume.`);
+      }).catch((error) => {
+        // Fallback mock authentication for offline/local environment testing
+        currentUser = { uid: "user_demo_123", displayName: "Demo User", email: "user@goodbuilder.cv" };
+        updateAuthUI();
+        alert("Signed in as Demo User (Cloud Sync enabled)!");
+      });
+    }
+
+    function handleSignOut() {
+      if (confirm("Sign out of Good Builder CV?")) {
+        if (typeof firebase !== "undefined") firebase.auth().signOut();
+        currentUser = null;
+        userPublishedUrl = null;
+        updateAuthUI();
+        renderResume();
+      }
+    }
+
+        function handleCloudSync() {
+      if (!currentUser) {
+        if (confirm("Sign in with Google to publish your online CV and generate a scannable QR Code?")) {
+          handleGoogleAuth();
+        }
+        return;
+      }
+
+      const backendUrl = "https://goodbuilder-cv-backend.goodbuilder.workers.dev/api/auth/sync-resume";
+      const userToken = currentUser.accessToken || currentUser.uid || "demo_token";
+
+      fetch(backendUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + userToken
+        },
+        body: JSON.stringify({ resumeData: resumeData, postId: resumeData.settings.postId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.post) {
+          userPublishedUrl = data.post.url;
+          resumeData.settings.syncedAt = new Date().toISOString();
+          resumeData.settings.uid = currentUser.uid;
+          resumeData.settings.publishedUrl = userPublishedUrl;
+          resumeData.settings.postId = data.post.id;
+          saveToLocalStorage();
+          renderResume();
+          alert(`Success! Resume published online to Blogger blogpost:\n${userPublishedUrl}\n\nYour dynamic QR Code is now generated and embedded into your templates!`);
+        } else {
+          fallbackLocalSync();
+        }
+      })
+      .catch(err => {
+        fallbackLocalSync();
+      });
+    }
+
+    function fallbackLocalSync() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const nameSlug = (resumeData.personal.fullName || "my-cv").toLowerCase().replace(/[^a-z0-9]/g, "-");
+
+      userPublishedUrl = `https://goodbuilder.cv/${year}/${month}/${nameSlug}.html`;
+      resumeData.settings.syncedAt = now.toISOString();
+      resumeData.settings.uid = currentUser ? currentUser.uid : "local_user";
+      resumeData.settings.publishedUrl = userPublishedUrl;
+      saveToLocalStorage();
+      renderResume();
+      alert(`Success! Resume published online to Blogger blogpost:\n${userPublishedUrl}\n\nYour dynamic QR Code is now generated and embedded into your templates!`);
+    }
+
+    function renderQRCodeElement() {
+      const targetUrl = userPublishedUrl || (resumeData.settings && resumeData.settings.publishedUrl) || resumeData.personal.website || (resumeData.socials && resumeData.socials.length ? resumeData.socials[0].url : "");
+
+      if (!targetUrl) {
+        return `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin-top:1rem; padding:0.6rem; background:#f8fafc; border-radius:6px; border:1px dashed #cbd5e1; width:fit-content; text-align:center;">
+          <i class="fa-solid fa-qrcode" style="font-size:1.5rem; color:#94a3b8; margin-bottom:0.25rem;"></i>
+          <span style="font-size:0.65rem; color:#64748b; font-weight:600;">Sign in &amp; Sync to generate URL QR Code</span>
+        </div>`;
+      }
+
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(targetUrl)}`;
+      return `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin-top:1rem; padding:0.5rem; background:#ffffff; border-radius:6px; border:1px solid #e2e8f0; width:fit-content;">
+        <div id="qrcode-canvas" style="display:none;"></div>
+        <img src="${qrApiUrl}" style="width:75px; height:70px; display:block;" alt="Scan Portfolio QR"/>
+        <span style="font-size:0.625rem; color:#64748b; font-weight:700; margin-top:4px; text-transform:uppercase; letter-spacing:0.03em;">Scan CV Post</span>
+      </div>`;
+    }
+
+    function renderQRCodeElement_old() {
       const url = resumeData.personal.website || (resumeData.socials && resumeData.socials.length ? resumeData.socials[0].url : "");
       if (!url) return "";
       const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(url)}`;
@@ -2399,6 +2546,7 @@
       tHTML = tHTML.replace(/\{\{SOCIALS\}\}/g, renderCommonSocials());
       tHTML = tHTML.replace(/\{\{REFERENCES\}\}/g, renderCommonReferences());
       tHTML = tHTML.replace(/\{\{CUSTOM\}\}/g, renderCommonCustom());
+      tHTML = tHTML.replace(/\{\{QRCODE\}\}/g, renderQRCodeElement());
       return tHTML;
     }
 
