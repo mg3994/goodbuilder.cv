@@ -645,6 +645,27 @@
           </div>
         </div>
 
+                <!-- Tab 16: AI Resume Content Enhancer & Power Prompts -->
+        <div class="tab-pane" id="tab-aienhancer">
+          <div class="section-title">AI Content &amp; Action Verbs Enhancer</div>
+          <p style="font-size:0.85rem; color:#475569;">Copy high-impact action verbs and industry phrase templates to instantly boost your resume strength.</p>
+
+          <div style="margin-bottom:1.25rem;">
+            <label>Select Industry / Field</label>
+            <select id="ai-industry-select" onchange="renderAIPrompts(this.value)">
+              <option value="tech" selected="selected">Software &amp; Technology</option>
+              <option value="management">Management &amp; Leadership</option>
+              <option value="marketing">Marketing &amp; Growth</option>
+              <option value="finance">Finance &amp; Operations</option>
+            </select>
+          </div>
+
+          <div style="font-weight:700; font-size:0.9rem; margin-bottom:0.5rem; color:#0f172a;">High-Impact Action Verbs</div>
+          <div id="ai-action-verbs-list" style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:1.25rem;"></div>
+
+          <div style="font-weight:700; font-size:0.9rem; margin-bottom:0.5rem; color:#0f172a;">High-Impact Bullet Point Templates</div>
+          <div id="ai-bullet-templates-list"></div>
+        </div>
         <!-- Tab 15: ATS Compatibility Score & Feedback -->
         <div class='tab-pane' id='tab-ats'>
           <div class='section-title'>ATS Optimization Score</div>
@@ -727,13 +748,14 @@
           <label>Accent Color:</label>
           <input id='select-accent-color' type='color' value='#2563eb' onchange='changeAccentColor(this.value)'/>
           <div class='color-swatches'>
-            <div class='swatch' style='background:#2563eb;' title='Royal Blue' onclick='changeAccentColor("#2563eb")'></div>
+            <div class='swatch' style='background:#2563eb;' title='Corporate Blue' onclick='changeAccentColor("#2563eb")'></div>
             <div class='swatch' style='background:#0f172a;' title='Slate Navy' onclick='changeAccentColor("#0f172a")'></div>
-            <div class='swatch' style='background:#059669;' title='Emerald' onclick='changeAccentColor("#059669")'></div>
-            <div class='swatch' style='background:#7c3aed;' title='Purple Accent' onclick='changeAccentColor("#7c3aed")'></div>
-            <div class='swatch' style='background:#dc2626;' title='Crimson' onclick='changeAccentColor("#dc2626")'></div>
-            <div class='swatch' style='background:#ea580c;' title='Orange' onclick='changeAccentColor("#ea580c")'></div>
+            <div class='swatch' style='background:#059669;' title='Modern Emerald' onclick='changeAccentColor("#059669")'></div>
+            <div class='swatch' style='background:#7c3aed;' title='Creative Violet' onclick='changeAccentColor("#7c3aed")'></div>
+            <div class='swatch' style='background:#dc2626;' title='Ruby Crimson' onclick='changeAccentColor("#dc2626")'></div>
+            <div class='swatch' style='background:#ea580c;' title='Sunset Amber' onclick='changeAccentColor("#ea580c")'></div>
             <div class='swatch' style='background:#0284c7;' title='Sky Blue' onclick='changeAccentColor("#0284c7")'></div>
+            <div class='swatch' style='background:#475569;' title='Executive Graphite' onclick='changeAccentColor("#475569")'></div>
           </div>
         </div>
 
@@ -1636,27 +1658,102 @@
       }
     }
 
-        function renderOrderedSectionsHTML(excludeKeys = []) {
+
+    const translations = {
+      en: { summary: "Profile Summary", experience: "Work Experience", education: "Education", skills: "Skills & Expertise", projects: "Projects", languages: "Languages", certifications: "Certifications", socials: "Links & Profiles", references: "References", hobbies: "Hobbies & Interests", present: "Present" },
+      es: { summary: "Perfil Profesional", experience: "Experiencia Laboral", education: "Educación", skills: "Habilidades y Competencias", projects: "Proyectos", languages: "Idiomas", certifications: "Certificaciones", socials: "Enlaces y Perfiles", references: "Referencias", hobbies: "Intereses y Pasatiempos", present: "Presente" },
+      fr: { summary: "Profil Professionnel", experience: "Expérience Professionnelle", education: "Formation", skills: "Compétences", projects: "Projets", languages: "Langues", certifications: "Certifications", socials: "Liens et Profils", references: "Références", hobbies: "Centres d intérêt", present: "Présent" },
+      de: { summary: "Berufsprofil", experience: "Berufserfahrung", education: "Ausbildung", skills: "Kenntnisse & Fähigkeiten", projects: "Projekte", languages: "Sprachen", certifications: "Zertifizierungen", socials: "Links & Profile", references: "Referenzen", hobbies: "Interessen & Hobbys", present: "Heute" }
+    };
+
+    function changeLanguage(langKey) {
+      if (!resumeData.settings) resumeData.settings = {};
+      resumeData.settings.language = langKey;
+      saveToLocalStorage();
+      renderResume();
+    }
+
+    function getI18nText(key) {
+      const lang = (resumeData.settings && resumeData.settings.language) || "en";
+      return (translations[lang] && translations[lang][key]) || translations["en"][key] || key;
+    }
+
+    function renderOrderedSectionsHTML(excludeKeys = []) {
       if (!resumeData.sectionOrder) {
         resumeData.sectionOrder = ["summary", "experience", "education", "skills", "projects", "languages", "certifications", "socials", "references", "hobbies", "custom"];
       }
       return resumeData.sectionOrder.map(secKey => {
         if (excludeKeys.includes(secKey)) return "";
-        if (secKey === "summary" && resumeData.summary) return getSectionHTML("Profile Summary", `<p style="margin:0; color:inherit;">${escapeXml(resumeData.summary)}</p>`);
-        if (secKey === "experience") return getSectionHTML("Work Experience", renderCommonExperience());
-        if (secKey === "education") return getSectionHTML("Education", renderCommonEducation());
-        if (secKey === "skills") return getSectionHTML("Skills & Expertise", renderCommonSkills());
-        if (secKey === "projects") return getSectionHTML("Projects", renderCommonProjects());
-        if (secKey === "languages") return getSectionHTML("Languages", renderCommonLanguages());
-        if (secKey === "certifications") return getSectionHTML("Certifications", renderCommonCertifications());
-        if (secKey === "socials") return getSectionHTML("Links & Profiles", renderCommonSocials());
-        if (secKey === "references") return getSectionHTML("References", renderCommonReferences());
-        if (secKey === "hobbies") return getSectionHTML("Hobbies & Interests", `<div style="display:flex; flex-wrap:wrap; gap:0.4rem;">${resumeData.hobbies.map(h => `<span style="background:#f1f5f9; color:#0f172a; padding:0.25rem 0.6rem; border-radius:4px; font-weight:600; font-size:0.8rem; border:1px solid #e2e8f0;">${escapeXml(h.name)}</span>`).join("")}</div>`);
+        if (secKey === "summary" && resumeData.summary) return getSectionHTML(getI18nText("summary"), `<p style="margin:0; color:inherit;">${escapeXml(resumeData.summary)}</p>`);
+        if (secKey === "experience") return getSectionHTML(getI18nText("experience"), renderCommonExperience());
+        if (secKey === "education") return getSectionHTML(getI18nText("education"), renderCommonEducation());
+        if (secKey === "skills") return getSectionHTML(getI18nText("skills"), renderCommonSkills());
+        if (secKey === "projects") return getSectionHTML(getI18nText("projects"), renderCommonProjects());
+        if (secKey === "languages") return getSectionHTML(getI18nText("languages"), renderCommonLanguages());
+        if (secKey === "certifications") return getSectionHTML(getI18nText("certifications"), renderCommonCertifications());
+        if (secKey === "socials") return getSectionHTML(getI18nText("socials"), renderCommonSocials());
+        if (secKey === "references") return getSectionHTML(getI18nText("references"), renderCommonReferences());
+        if (secKey === "hobbies") return getSectionHTML(getI18nText("hobbies"), `<div style="display:flex; flex-wrap:wrap; gap:0.4rem;">${resumeData.hobbies.map(h => `<span style="background:#f1f5f9; color:#0f172a; padding:0.25rem 0.6rem; border-radius:4px; font-weight:600; font-size:0.8rem; border:1px solid #e2e8f0;">${escapeXml(h.name)}</span>`).join("")}</div>`);
         if (secKey === "custom") return renderCommonCustom();
         return "";
       }).join("");
     }
 
+
+
+    const aiPromptData = {
+      tech: {
+        verbs: ["Architected", "Spearheaded", "Engineered", "Optimized", "Refactored", "Automated", "Deployed", "Migrated", "Benchmarked", "Containerized"],
+        bullets: [
+          "Spearheaded migration of core services into microservices, reducing cloud latency by 35%.",
+          "Architected automated CI/CD pipelines, increasing deployment frequency by 400%.",
+          "Engineered real-time analytics dashboard serving over 100,000 active monthly users."
+        ]
+      },
+      management: {
+        verbs: ["Led", "Directed", "Orchestrated", "Negotiated", "Streamlined", "Pioneered", "Championed", "Scale-up", "Supervised", "Expanded"],
+        bullets: [
+          "Managed a cross-functional team of 15 engineers and designers delivering projects 15% ahead of schedule.",
+          "Orchestrated annual budget allocation of $2.5M, optimizing resource utilization by 22%.",
+          "Pioneered customer success strategy that reduced account churn by 18% year-over-year."
+        ]
+      },
+      marketing: {
+        verbs: ["Accelerated", "Boosted", "Converted", "Captured", "Amplified", "Monetized", "Launched", "Targeted", "Scaled", "Executed"],
+        bullets: [
+          "Launched targeted multi-channel campaign generating 45,000 qualified leads in Q3.",
+          "Accelerated organic traffic by 120% through data-driven SEO content strategy.",
+          "Boosted social media engagement rates by 85% with interactive video campaigns."
+        ]
+      },
+      finance: {
+        verbs: ["Forecasted", "Audited", "Minimized", "Reconciled", "Maximize", "Consolidated", "Analyzed", "Structured", "Mitigated", "Allocated"],
+        bullets: [
+          "Audited operational expenses, identifying $150K in annual cost savings.",
+          "Forecasted cash flow models with 98% accuracy across 4 consecutive quarters.",
+          "Structured debt financing package optimizing working capital ratio by 14%."
+        ]
+      }
+    };
+
+    function renderAIPrompts(industryKey) {
+      const data = aiPromptData[industryKey] || aiPromptData.tech;
+      const verbsBox = document.getElementById("ai-action-verbs-list");
+      const bulletsBox = document.getElementById("ai-bullet-templates-list");
+
+      if (verbsBox) {
+        verbsBox.innerHTML = data.verbs.map(v => `<span style="background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:12px; font-size:0.75rem; font-weight:600; cursor:pointer;" title="Click to copy" onclick="navigator.clipboard.writeText('${v}')">${v}</span>`).join("");
+      }
+
+      if (bulletsBox) {
+        bulletsBox.innerHTML = data.bullets.map(b => `
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:0.6rem 0.8rem; border-radius:0.375rem; margin-bottom:0.5rem; font-size:0.8rem; color:#334155; display:flex; justify-content:space-between; align-items:center;">
+            <span>${escapeXml(b)}</span>
+            <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${escapeAttr(b)}'); alert('Copied!');"><i class="fa-solid fa-copy"></i> Copy</button>
+          </div>
+        `).join("");
+      }
+    }
 
     function calculateATSScore() {
       let score = 0;
@@ -1716,7 +1813,7 @@
       saveToLocalStorage();
     }
 
-    function renderAllLists() { calculateATSScore(); renderSectionOrderManager();
+    function renderAllLists() { calculateATSScore(); renderAIPrompts('tech'); renderSectionOrderManager();
       renderExperienceList(); renderEducationList(); renderSkillsList(); renderProjectsList();
       renderLanguagesList(); renderCertificationsList(); renderSocialsList(); renderReferencesList();
       renderHobbiesList(); renderCustomSectionsList();
