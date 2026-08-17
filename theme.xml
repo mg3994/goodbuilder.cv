@@ -187,7 +187,7 @@
 
     label { display: block; font-size: 0.8rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem; }
 
-    input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="date"], select, textarea {
+    input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="date"], input[type="month"], select, textarea {
       width: 100%;
       padding: 0.5rem 0.75rem;
       font-size: 0.875rem;
@@ -204,6 +204,9 @@
     }
 
     textarea { resize: vertical; min-height: 80px; }
+
+    .checkbox-group { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+    .checkbox-group label { margin-bottom: 0; font-weight: 400; cursor: pointer; }
 
     .entry-card {
       background: #f8fafc;
@@ -299,47 +302,35 @@
       .mobile-view-toggle { display: inline-flex; }
     }
 
-    /* ==========================================
-       RESUME TEMPLATES STYLING
-       ========================================== */
-
-    /* TEMPLATE 1: Modern Split-Sidebar */
+    /* RESUME TEMPLATES STYLING */
     .template-modern { display: flex; min-height: 297mm; }
     .template-modern .sidebar { width: 32%; background-color: var(--accent-color, #2563eb); color: #ffffff; padding: 2rem 1.25rem; }
     .template-modern .main-content { width: 68%; padding: 2rem 1.5rem; }
     .template-modern .profile-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1.25rem auto; display: block; border: 3px solid rgba(255,255,255,0.3); }
 
-    /* TEMPLATE 2: Classic Executive */
     .template-classic { padding: 2.5rem; }
     .template-classic .header-classic { text-align: center; border-bottom: 2px solid var(--accent-color, #1e293b); padding-bottom: 1.25rem; margin-bottom: 1.5rem; }
     .template-classic .name-classic { font-size: 2.2rem; font-weight: 700; color: var(--accent-color, #1e293b); text-transform: uppercase; letter-spacing: 0.05em; }
 
-    /* TEMPLATE 3: Minimalist Clean */
     .template-minimal { padding: 2.5rem; }
     .template-minimal .header-minimal { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1.5rem; }
 
-    /* TEMPLATE 4: Creative Banner */
     .template-creative .banner { background: var(--accent-color, #2563eb); color: #ffffff; padding: 2.5rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
     .template-creative .banner-img { width: 110px; height: 110px; border-radius: 12px; object-fit: cover; border: 3px solid #ffffff; }
 
-    /* TEMPLATE 5: Compact Tech */
     .template-compact { padding: 1.75rem; font-size: 0.85rem; }
 
-    /* TEMPLATE 6: Executive Corporate */
     .template-executive { padding: 2.5rem; border-top: 8px solid var(--accent-color, #0f172a); }
     .template-executive .exec-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
 
-    /* TEMPLATE 7: Elegant Serif */
     .template-serif { padding: 3rem; font-family: 'Merriweather', 'Lora', serif; line-height: 1.6; }
     .template-serif .serif-header { text-align: center; margin-bottom: 2rem; }
     .template-serif .serif-title { font-size: 2.2rem; font-weight: 700; color: var(--accent-color, #1e293b); }
 
-    /* TEMPLATE 8: Timeline Professional */
     .template-timeline { padding: 2.5rem; }
     .template-timeline .timeline-item { position: relative; padding-left: 1.5rem; border-left: 2px solid var(--accent-color, #2563eb); margin-bottom: 1.25rem; }
     .template-timeline .timeline-dot { position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-color, #2563eb); }
 
-    /* PRINT STYLES */
     @media print {
       body { background: #ffffff !important; margin: 0 !important; padding: 0 !important; }
       .app-header, .editor-panel, .preview-toolbar, .mobile-view-toggle, .blogger-hidden-section { display: none !important; }
@@ -909,6 +900,7 @@
     function changeFontSize(val) { resumeData.settings.fontSize = val; saveToLocalStorage(); renderResume(); }
     function changeMargin(val) { resumeData.settings.margin = val; saveToLocalStorage(); renderResume(); }
 
+    // RENDER FORM EDITOR LISTS
     function renderExperienceList() {
       const container = document.getElementById('experience-list');
       container.innerHTML = '';
@@ -930,17 +922,28 @@
             <div class="form-group"><label>Location</label><input type="text" value="${escapeAttr(item.location)}" oninput="updateItemField('experience', '${item.id}', 'location', this.value)"/></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>Start Date</label><input type="month" value="${item.startDate || ''}" onchange="updateItemField('experience', '${item.id}', 'startDate', this.value)"/></div>
-            <div class="form-group"><label>End Date</label><input type="month" value="${item.endDate || ''}" ${item.current ? 'disabled' : ''} onchange="updateItemField('experience', '${item.id}', 'endDate', this.value)"/></div>
+            <div class="form-group"><label>Start Date</label><input type="month" value="${item.startDate || ''}" oninput="updateItemField('experience', '${item.id}', 'startDate', this.value)" onchange="updateItemField('experience', '${item.id}', 'startDate', this.value)"/></div>
+            <div class="form-group"><label>End Date</label><input type="month" value="${item.endDate || ''}" ${item.current ? 'disabled' : ''} oninput="updateItemField('experience', '${item.id}', 'endDate', this.value)" onchange="updateItemField('experience', '${item.id}', 'endDate', this.value)"/></div>
           </div>
           <div class="checkbox-group">
-            <input type="checkbox" id="exp-curr-${item.id}" ${item.current ? 'checked' : ''} onchange="updateItemField('experience', '${item.id}', 'current', this.checked)"/>
-            <label for="exp-curr-${item.id}">Currently work here</label>
+            <input type="checkbox" id="exp-curr-${item.id}" ${item.current ? 'checked' : ''} onchange="updateExperienceCurrent('${item.id}', this.checked)"/>
+            <label for="exp-curr-${item.id}">I currently work here</label>
           </div>
           <div class="form-group" style="margin-top:0.75rem;"><label>Description &amp; Bullet Points</label><textarea rows="3" oninput="updateItemField('experience', '${item.id}', 'description', this.value)">${item.description || ''}</textarea></div>
         `;
         container.appendChild(card);
       });
+    }
+
+    function updateExperienceCurrent(id, isChecked) {
+      const item = resumeData.experience.find(i => i.id === id);
+      if (item) {
+        item.current = isChecked;
+        if (isChecked) item.endDate = '';
+        renderExperienceList();
+        saveToLocalStorage();
+        renderResume();
+      }
     }
 
     function addExperience() {
@@ -959,11 +962,17 @@
             <span class="entry-card-title">${item.degree || 'Degree'} - ${item.institution || 'School'}</span>
             <div class="entry-actions"><button class="btn btn-danger btn-sm" onclick="removeItem('education', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           </div>
-          <div class="form-group"><label>Degree</label><input type="text" value="${escapeAttr(item.degree)}" oninput="updateItemField('education', '${item.id}', 'degree', this.value)"/></div>
+          <div class="form-group"><label>Degree / Qualification</label><input type="text" value="${escapeAttr(item.degree)}" oninput="updateItemField('education', '${item.id}', 'degree', this.value)"/></div>
           <div class="form-row">
-            <div class="form-group"><label>Institution</label><input type="text" value="${escapeAttr(item.institution)}" oninput="updateItemField('education', '${item.id}', 'institution', this.value)"/></div>
+            <div class="form-group"><label>Institution / University</label><input type="text" value="${escapeAttr(item.institution)}" oninput="updateItemField('education', '${item.id}', 'institution', this.value)"/></div>
             <div class="form-group"><label>Location</label><input type="text" value="${escapeAttr(item.location)}" oninput="updateItemField('education', '${item.id}', 'location', this.value)"/></div>
           </div>
+          <div class="form-row">
+            <div class="form-group"><label>Start Date</label><input type="month" value="${item.startDate || ''}" oninput="updateItemField('education', '${item.id}', 'startDate', this.value)" onchange="updateItemField('education', '${item.id}', 'startDate', this.value)"/></div>
+            <div class="form-group"><label>End Date</label><input type="month" value="${item.endDate || ''}" oninput="updateItemField('education', '${item.id}', 'endDate', this.value)" onchange="updateItemField('education', '${item.id}', 'endDate', this.value)"/></div>
+          </div>
+          <div class="form-group"><label>GPA / Grade (Optional)</label><input type="text" value="${escapeAttr(item.gpa)}" oninput="updateItemField('education', '${item.id}', 'gpa', this.value)"/></div>
+          <div class="form-group"><label>Description / Honors</label><textarea rows="2" oninput="updateItemField('education', '${item.id}', 'description', this.value)">${item.description || ''}</textarea></div>
         `;
         container.appendChild(card);
       });
@@ -983,8 +992,8 @@
         card.innerHTML = `
           <div class="entry-card-header"><span class="entry-card-title">${item.name || 'New Skill'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('skills', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-row">
-            <div class="form-group"><label>Skill</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('skills', '${item.id}', 'name', this.value)"/></div>
-            <div class="form-group"><label>Rating (${item.level || '80'}%)</label><input type="range" min="10" max="100" step="5" value="${item.level || '80'}" oninput="updateItemField('skills', '${item.id}', 'level', this.value)"/></div>
+            <div class="form-group"><label>Skill Name</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('skills', '${item.id}', 'name', this.value)"/></div>
+            <div class="form-group"><label>Proficiency Rating (${item.level || '80'}%)</label><input type="range" min="10" max="100" step="5" value="${item.level || '80'}" oninput="updateItemField('skills', '${item.id}', 'level', this.value)"/></div>
           </div>
         `;
         container.appendChild(card);
@@ -1001,7 +1010,11 @@
         card.className = 'entry-card';
         card.innerHTML = `
           <div class="entry-card-header"><span class="entry-card-title">${item.title || 'Project'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('projects', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
-          <div class="form-group"><label>Title</label><input type="text" value="${escapeAttr(item.title)}" oninput="updateItemField('projects', '${item.id}', 'title', this.value)"/></div>
+          <div class="form-row">
+            <div class="form-group"><label>Project Title</label><input type="text" value="${escapeAttr(item.title)}" oninput="updateItemField('projects', '${item.id}', 'title', this.value)"/></div>
+            <div class="form-group"><label>Link / URL</label><input type="url" value="${escapeAttr(item.link)}" oninput="updateItemField('projects', '${item.id}', 'link', this.value)"/></div>
+          </div>
+          <div class="form-group"><label>Technologies Used</label><input type="text" placeholder="e.g. React, Node.js" value="${escapeAttr(item.tech)}" oninput="updateItemField('projects', '${item.id}', 'tech', this.value)"/></div>
           <div class="form-group"><label>Description</label><textarea rows="2" oninput="updateItemField('projects', '${item.id}', 'description', this.value)">${item.description || ''}</textarea></div>
         `;
         container.appendChild(card);
@@ -1035,7 +1048,12 @@
         card.className = 'entry-card';
         card.innerHTML = `
           <div class="entry-card-header"><span class="entry-card-title">${item.title || 'Certification'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('certifications', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
-          <div class="form-group"><label>Title</label><input type="text" value="${escapeAttr(item.title)}" oninput="updateItemField('certifications', '${item.id}', 'title', this.value)"/></div>
+          <div class="form-group"><label>Certification Name</label><input type="text" value="${escapeAttr(item.title)}" oninput="updateItemField('certifications', '${item.id}', 'title', this.value)"/></div>
+          <div class="form-row">
+            <div class="form-group"><label>Issuer</label><input type="text" value="${escapeAttr(item.issuer)}" oninput="updateItemField('certifications', '${item.id}', 'issuer', this.value)"/></div>
+            <div class="form-group"><label>Date</label><input type="month" value="${item.date || ''}" oninput="updateItemField('certifications', '${item.id}', 'date', this.value)" onchange="updateItemField('certifications', '${item.id}', 'date', this.value)"/></div>
+          </div>
+          <div class="form-group"><label>Credential URL</label><input type="url" value="${escapeAttr(item.url)}" oninput="updateItemField('certifications', '${item.id}', 'url', this.value)"/></div>
         `;
         container.appendChild(card);
       });
@@ -1052,8 +1070,9 @@
           <div class="entry-card-header"><span class="entry-card-title">${item.platform || 'Link'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('socials', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-row">
             <div class="form-group"><label>Platform</label><input type="text" value="${escapeAttr(item.platform)}" oninput="updateItemField('socials', '${item.id}', 'platform', this.value)"/></div>
-            <div class="form-group"><label>URL</label><input type="url" value="${escapeAttr(item.url)}" oninput="updateItemField('socials', '${item.id}', 'url', this.value)"/></div>
+            <div class="form-group"><label>Username</label><input type="text" value="${escapeAttr(item.username)}" oninput="updateItemField('socials', '${item.id}', 'username', this.value)"/></div>
           </div>
+          <div class="form-group"><label>URL</label><input type="url" value="${escapeAttr(item.url)}" oninput="updateItemField('socials', '${item.id}', 'url', this.value)"/></div>
         `;
         container.appendChild(card);
       });
@@ -1068,7 +1087,9 @@
         card.className = 'entry-card';
         card.innerHTML = `
           <div class="entry-card-header"><span class="entry-card-title">${item.name || 'Reference'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('references', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
-          <div class="form-group"><label>Name</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('references', '${item.id}', 'name', this.value)"/></div>
+          <div class="form-group"><label>Full Name</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('references', '${item.id}', 'name', this.value)"/></div>
+          <div class="form-group"><label>Job Title &amp; Company</label><input type="text" value="${escapeAttr(item.title)}" oninput="updateItemField('references', '${item.id}', 'title', this.value)"/></div>
+          <div class="form-group"><label>Contact Info</label><input type="text" value="${escapeAttr(item.contact)}" oninput="updateItemField('references', '${item.id}', 'contact', this.value)"/></div>
         `;
         container.appendChild(card);
       });
@@ -1083,7 +1104,7 @@
         card.className = 'entry-card';
         card.innerHTML = `
           <div class="entry-card-header"><span class="entry-card-title">${item.name || 'Hobby'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('hobbies', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
-          <div class="form-group"><label>Hobby</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('hobbies', '${item.id}', 'name', this.value)"/></div>
+          <div class="form-group"><label>Hobby / Interest</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('hobbies', '${item.id}', 'name', this.value)"/></div>
         `;
         container.appendChild(card);
       });
@@ -1097,15 +1118,84 @@
         const card = document.createElement('div');
         card.className = 'entry-card';
         card.innerHTML = `
-          <div class="entry-card-header"><span class="entry-card-title">${sec.heading || 'Custom Section'}</span><button class="btn btn-danger btn-sm" onclick="removeCustomSection('${sec.id}')"><i class="fa-solid fa-trash"></i></button></div>
-          <div class="form-group"><label>Section Title</label><input type="text" value="${escapeAttr(sec.heading)}" oninput="updateCustomHeading('${sec.id}', this.value)"/></div>
+          <div class="entry-card-header">
+            <span class="entry-card-title">${sec.heading || 'Custom Section'}</span>
+            <button class="btn btn-danger btn-sm" onclick="removeCustomSection('${sec.id}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <div class="form-group">
+            <label>Section Heading Title</label>
+            <input type="text" value="${escapeAttr(sec.heading)}" oninput="updateCustomHeading('${sec.id}', this.value)"/>
+          </div>
+          <div style="margin-top:0.75rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <label style="margin:0;">Section Items</label>
+              <button class="btn btn-outline btn-sm" onclick="addCustomItem('${sec.id}')"><i class="fa-solid fa-plus"></i> Add Item</button>
+            </div>
+            <div id="custom-items-${sec.id}"></div>
+          </div>
         `;
         container.appendChild(card);
+
+        const itemContainer = card.querySelector(`#custom-items-${sec.id}`);
+        sec.items.forEach((item) => {
+          const itemBox = document.createElement('div');
+          itemBox.style.cssText = 'border: 1px dashed #cbd5e1; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 0.5rem; background:#fff;';
+          itemBox.innerHTML = `
+            <div style="text-align:right; margin-bottom:0.25rem;">
+              <button class="btn btn-danger btn-sm" onclick="removeCustomItem('${sec.id}', '${item.id}')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" value="${escapeAttr(item.title)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'title', this.value)"/>
+              </div>
+              <div class="form-group">
+                <label>Subtitle / Organization</label>
+                <input type="text" value="${escapeAttr(item.subtitle)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'subtitle', this.value)"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Date / Period</label>
+              <input type="text" value="${escapeAttr(item.date)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'date', this.value)"/>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea rows="2" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'description', this.value)">${item.description || ''}</textarea>
+            </div>
+          `;
+          itemContainer.appendChild(itemBox);
+        });
       });
     }
+
     function addCustomSection() { resumeData.customSections.push({ id: generateId(), heading: 'Custom Section', items: [] }); renderCustomSectionsList(); saveToLocalStorage(); renderResume(); }
     function removeCustomSection(secId) { resumeData.customSections = resumeData.customSections.filter(s => s.id !== secId); renderCustomSectionsList(); saveToLocalStorage(); renderResume(); }
     function updateCustomHeading(secId, val) { const sec = resumeData.customSections.find(s => s.id === secId); if (sec) sec.heading = val; saveToLocalStorage(); renderResume(); }
+
+    function addCustomItem(secId) {
+      const sec = resumeData.customSections.find(s => s.id === secId);
+      if (sec) {
+        sec.items.push({ id: generateId(), title: '', subtitle: '', date: '', description: '' });
+        renderCustomSectionsList(); saveToLocalStorage(); renderResume();
+      }
+    }
+
+    function removeCustomItem(secId, itemId) {
+      const sec = resumeData.customSections.find(s => s.id === secId);
+      if (sec) {
+        sec.items = sec.items.filter(i => i.id !== itemId);
+        renderCustomSectionsList(); saveToLocalStorage(); renderResume();
+      }
+    }
+
+    function updateCustomItemField(secId, itemId, field, val) {
+      const sec = resumeData.customSections.find(s => s.id === secId);
+      if (sec) {
+        const item = sec.items.find(i => i.id === itemId);
+        if (item) item[field] = val;
+        saveToLocalStorage(); renderResume();
+      }
+    }
 
     function renderAllLists() {
       renderExperienceList(); renderEducationList(); renderSkillsList(); renderProjectsList();
@@ -1142,7 +1232,7 @@
       return date.toLocaleString('default', { month: 'short' }) + ' ' + year;
     }
 
-    // Helper functions for rendering sub-sections across all templates
+    // SECTION RENDER HELPERS
     function getSectionHTML(title, content) {
       if (!content) return '';
       return `<div style="margin-bottom:1.25rem;">
@@ -1157,7 +1247,7 @@
         <div style="margin-bottom:0.85rem;">
           <div style="display:flex; justify-content:space-between; font-weight:700;">
             <span style="color:#0f172a;">${e.title}</span>
-            <span style="color:var(--accent-color); font-size:0.8rem;">${formatDate(e.startDate)} - ${e.current ? 'Present' : formatDate(e.endDate)}</span>
+            <span style="color:var(--accent-color); font-size:0.8rem;">${formatDate(e.startDate)}${e.startDate || e.endDate || e.current ? ' - ' : ''}${e.current ? 'Present' : formatDate(e.endDate)}</span>
           </div>
           <div style="font-size:0.85rem; color:#475569; font-weight:500;">${e.company} ${e.location ? `• ${e.location}` : ''}</div>
           <div style="font-size:0.85rem; color:#334155; margin-top:0.25rem; white-space:pre-line;">${e.description}</div>
@@ -1171,7 +1261,7 @@
         <div style="margin-bottom:0.65rem;">
           <div style="display:flex; justify-content:space-between; font-weight:700;">
             <span>${e.degree}</span>
-            <span style="color:#64748b; font-size:0.8rem;">${formatDate(e.startDate)} - ${formatDate(e.endDate)}</span>
+            <span style="color:#64748b; font-size:0.8rem;">${formatDate(e.startDate)}${e.startDate || e.endDate ? ' - ' : ''}${formatDate(e.endDate)}</span>
           </div>
           <div style="font-size:0.85rem; color:#475569;">${e.institution} ${e.location ? `(${e.location})` : ''} ${e.gpa ? `• GPA: ${e.gpa}` : ''}</div>
           ${e.description ? `<div style="font-size:0.8rem; color:#64748b;">${e.description}</div>` : ''}
@@ -1225,19 +1315,21 @@
     }
 
     function renderCommonCustom() {
-      if (!resumeData.customSections.length) return '';
-      return resumeData.customSections.map(sec => getSectionHTML(sec.heading, sec.items.map(i => `
-        <div style="margin-bottom:0.6rem;">
-          <div style="display:flex; justify-content:space-between; font-weight:700;"><span>${i.title}</span><span style="color:#64748b; font-size:0.8rem;">${i.date}</span></div>
-          ${i.subtitle ? `<div style="font-size:0.85rem; color:#475569;">${i.subtitle}</div>` : ''}
-          ${i.description ? `<div style="font-size:0.85rem; color:#334155;">${i.description}</div>` : ''}
-        </div>
-      `).join(''))).join('');
+      if (!resumeData.customSections || !resumeData.customSections.length) return '';
+      return resumeData.customSections.map(sec => {
+        if (!sec.items || !sec.items.length) return '';
+        const itemsHTML = sec.items.map(i => `
+          <div style="margin-bottom:0.6rem;">
+            <div style="display:flex; justify-content:space-between; font-weight:700;"><span>${i.title}</span><span style="color:#64748b; font-size:0.8rem;">${i.date}</span></div>
+            ${i.subtitle ? `<div style="font-size:0.85rem; color:#475569;">${i.subtitle}</div>` : ''}
+            ${i.description ? `<div style="font-size:0.85rem; color:#334155;">${i.description}</div>` : ''}
+          </div>
+        `).join('');
+        return getSectionHTML(sec.heading, itemsHTML);
+      }).join('');
     }
 
-    // ==========================================
-    // COMPLETE RESUME TEMPLATE RENDERERS
-    // ==========================================
+    // MAIN RESUME RENDER ENGINE
     function renderResume() {
       const container = document.getElementById('resume-preview');
       const settings = resumeData.settings;
