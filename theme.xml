@@ -665,6 +665,11 @@
 
           <div style="font-weight:700; font-size:0.9rem; margin-bottom:0.5rem; color:#0f172a;">High-Impact Bullet Point Templates</div>
           <div id="ai-bullet-templates-list"></div>
+                  <div style="margin-top:1.5rem; border-top:1px solid #e2e8f0; padding-top:1rem;">
+            <div style="font-weight:700; font-size:0.9rem; margin-bottom:0.5rem; color:#0f172a;"><i class="fa-solid fa-check-double"></i> Bullet Points Quality Proofreader</div>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:0.75rem;">Real-time analysis of your work experience bullet points for power verbs and metrics:</p>
+            <div id="ai-proofreader-feedback"></div>
+          </div>
         </div>
         <!-- Tab 15: ATS Compatibility Score & Feedback -->
         <div class='tab-pane' id='tab-ats'>
@@ -1025,6 +1030,33 @@
       html2pdf().set(opt).from(element).save();
     }
 
+
+    function downloadDOCX() {
+      const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+            "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+            "xmlns='http://www.w3.org/TR/REC-html40'>"+
+            "<head><meta charset='utf-8'><title>Export Doc</title><style>"+
+            "body{font-family:Arial,sans-serif;font-size:11pt;color:#1f2937;margin:1in;}"+
+            "h1{font-size:20pt;color:#0f172a;}h2{font-size:14pt;color:#2563eb;border-bottom:1px solid #2563eb;margin-top:1rem;}"+
+            ".cv-link{color:#2563eb;text-decoration:underline;}"+
+            "</style></head><body>";
+      const footer = "</body></html>";
+      const html = header + document.getElementById("resume-preview").innerHTML + footer;
+
+      const blob = new Blob(["﻿", html], {
+        type: "application/msword"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${(resumeData.personal.fullName || "Resume").replace(/\s+/g, "_")}_GoodBuilderCV.doc`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
     function downloadStandaloneHTML() {
       const resumeContent = document.getElementById('resume-preview').innerHTML;
       const customCss = document.getElementById("custom-template-style-element").innerHTML;
@@ -1157,6 +1189,18 @@
     function changeFontFamily(val) { resumeData.settings.fontFamily = val; saveToLocalStorage(); renderResume(); }
     function changeFontSize(val) { resumeData.settings.fontSize = val; saveToLocalStorage(); renderResume(); }
     function changeMargin(val) { resumeData.settings.margin = val; saveToLocalStorage(); renderResume(); }
+
+    function changeZoom(scaleVal) {
+      const paper = document.getElementById("resume-preview");
+      if (paper) {
+        paper.style.transform = `scale(${scaleVal})`;
+        paper.style.transformOrigin = "top center";
+      }
+      if (!resumeData.settings) resumeData.settings = {};
+      resumeData.settings.zoom = scaleVal;
+      saveToLocalStorage();
+    }
+
 
     /* CUSTOM TEMPLATE STUDIO FUNCTIONS */
     function updateTemplateDropdownOptions() {
@@ -1755,6 +1799,54 @@
       }
     }
 
+
+    function runBulletProofreader() {
+      const container = document.getElementById("ai-proofreader-feedback");
+      if (!container) return;
+
+      let items = [];
+      const expList = resumeData.experience || [];
+      if (!expList.length) {
+        container.innerHTML = `<div style="font-size:0.8rem; color:#94a3b8;">Add work experience bullet points to run proofreading analysis.</div>`;
+        return;
+      }
+
+      expList.forEach((exp, idx) => {
+        const text = exp.description || "";
+        if (!text) return;
+        const bullets = text.split("\n").filter(b => b.trim().length > 0);
+        bullets.forEach((bullet, bIdx) => {
+          let warnings = [];
+          if (!/^[•\-*\d]/i.test(bullet.trim()) && !/^[A-Z]/i.test(bullet.trim())) {
+            warnings.push("Bullet point should start with an action verb or bullet symbol.");
+          }
+          if (!/\d+|%|\$|M|K/i.test(bullet)) {
+            warnings.push("Consider adding quantifiable metrics or impact numbers (e.g., %, $, numbers).");
+          }
+          if (bullet.length < 25) {
+            warnings.push("Bullet point is too short. Elaborate on your task and result.");
+          }
+          items.push({
+            role: exp.title || "Job #" + (idx + 1),
+            bullet: bullet,
+            warnings: warnings
+          });
+        });
+      });
+
+      if (!items.length) {
+        container.innerHTML = `<div style="font-size:0.8rem; color:#10b981; font-weight:600;"><i class="fa-solid fa-circle-check"></i> All bullet points look well-formatted!</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:0.6rem; border-radius:0.375rem; margin-bottom:0.5rem; font-size:0.8rem;">
+          <div style="font-weight:700; color:#0f172a; margin-bottom:0.25rem;">${escapeXml(item.role)}: "${escapeXml(item.bullet)}"</div>
+          ${item.warnings.length ? item.warnings.map(w => `<div style="color:#d97706; font-size:0.75rem;"><i class="fa-solid fa-triangle-exclamation"></i> ${escapeXml(w)}</div>`).join("") : `<div style="color:#10b981; font-size:0.75rem;"><i class="fa-solid fa-check"></i> Great impact bullet point!</div>`}
+        </div>
+      `).join("");
+    }
+
     function calculateATSScore() {
       let score = 0;
       let checklist = [];
@@ -1813,7 +1905,7 @@
       saveToLocalStorage();
     }
 
-    function renderAllLists() { calculateATSScore(); renderAIPrompts('tech'); renderSectionOrderManager();
+    function renderAllLists() { calculateATSScore(); runBulletProofreader(); renderAIPrompts('tech'); renderSectionOrderManager();
       renderExperienceList(); renderEducationList(); renderSkillsList(); renderProjectsList();
       renderLanguagesList(); renderCertificationsList(); renderSocialsList(); renderReferencesList();
       renderHobbiesList(); renderCustomSectionsList();
