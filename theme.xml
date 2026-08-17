@@ -761,6 +761,7 @@
             <option value='boldmodern'>Bold Modern Split</option>
             <option value='infographic'>Infographic Sidebar</option>
             <option value='minimalgrid'>Minimal Two-Column Grid</option>
+            <option value='coverletter'>Matching Cover Letter Document</option>
           </select>
         </div>
 
@@ -1172,6 +1173,13 @@
       if (selectedBtn) selectedBtn.classList.add('active');
       const selectedPane = document.getElementById(`tab-${tabId}`);
       if (selectedPane) selectedPane.classList.add('active');
+
+      if (tabId === 'coverletter') {
+        changeTemplate('coverletter');
+        if (document.getElementById('select-template')) {
+          document.getElementById('select-template').value = 'coverletter';
+        }
+      }
     }
 
     function toggleMobileView() {
@@ -1739,7 +1747,7 @@
         socials: "Social & Web Links",
         references: "References",
         hobbies: "Hobbies",
-        custom: "Custom Sections"
+        custom: "Custom Sections", coverletter: "Cover Letter Attachment"
       };
       resumeData.sectionOrder.forEach((secKey, index) => {
         const item = document.createElement("div");
@@ -1818,6 +1826,10 @@
         if (secKey === "references") return getSectionHTML(getI18nText("references"), renderCommonReferences());
         if (secKey === "hobbies") return getSectionHTML(getI18nText("hobbies"), `<div style="display:flex; flex-wrap:wrap; gap:0.4rem;">${resumeData.hobbies.map(h => `<span style="background:#f1f5f9; color:#0f172a; padding:0.25rem 0.6rem; border-radius:4px; font-weight:600; font-size:0.8rem; border:1px solid #e2e8f0;">${escapeXml(h.name)}</span>`).join("")}</div>`);
         if (secKey === "custom") return renderCommonCustom();
+        if (secKey === "coverletter" && resumeData.coverLetter && resumeData.coverLetter.body) {
+          const cl = resumeData.coverLetter;
+          return getSectionHTML("Cover Letter", `<div style="font-size:0.9rem; line-height:1.6; color:#334155;"><p><strong>To: ${escapeXml(cl.recipient || "")} (${escapeXml(cl.company || "")})</strong></p><p><em>${escapeXml(cl.salutation || "")}</em></p><p style="white-space:pre-line;">${escapeXml(cl.body || "")}</p><p><strong>${escapeXml(cl.closing || "")}</strong></p></div>`, "coverletter");
+        }
         return "";
       }).join("");
     }
@@ -2284,6 +2296,7 @@
         else if (template === 'boldmodern') html = renderBoldModernTemplate(p, paddingVal);
         else if (template === 'infographic') html = renderInfographicTemplate(p, paddingVal);
         else if (template === 'minimalgrid') html = renderMinimalGridTemplate(p, paddingVal);
+        else if (template === 'coverletter') html = renderCoverLetterTemplate(p, paddingVal);
       }
 
       container.innerHTML = html;
