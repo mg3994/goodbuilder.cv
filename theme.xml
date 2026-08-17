@@ -521,6 +521,15 @@
             </div>
           </div>
           <div class='form-group'>
+            <label>Profile Photo Display Style</label>
+            <select id='personal-photoStyle' onchange='updatePersonalInfo()'>
+              <option value='circle' selected='selected'>Circular Badge</option>
+              <option value='rounded'>Rounded Square</option>
+              <option value='square'>Classic Square</option>
+            </select>
+          </div>
+
+          <div class='form-group'>
             <label>Profile Photo URL or Upload File</label>
             <input id='personal-photo' type='text' placeholder='https://example.com/photo.jpg or choose file' oninput='updatePersonalInfo()'/>
             <input id='personal-photo-file' style='margin-top: 0.5rem;' type='file' accept='image/*' onchange='handlePhotoUpload(event)'/>
@@ -835,7 +844,7 @@
       references: [],
       hobbies: [],
       customSections: [],
-      sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
+      sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], columnAllocations: { skills: 'left', languages: 'left', hobbies: 'left', socials: 'left' }, settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
     };
 
     let userCustomTemplates = [];
@@ -927,7 +936,7 @@
           items: [{ id: 'citem1', title: 'Coding Mentor', subtitle: 'Code.org', date: '2020 - Present', location: 'Remote', description: 'Volunteered 5 hours weekly teaching Web Development to aspiring developers.' }]
         }
       ],
-      sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
+      sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], columnAllocations: { skills: 'left', languages: 'left', hobbies: 'left', socials: 'left' }, settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
     };
 
     function generateId() { return '_' + Math.random().toString(36).substr(2, 9); }
@@ -1031,7 +1040,7 @@
           personal: { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '', photo: '' },
           summary: '', experience: [], education: [], skills: [], projects: [], languages: [], certifications: [],
           socials: [], references: [], hobbies: [], customSections: [],
-          sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
+          sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], columnAllocations: { skills: 'left', languages: 'left', hobbies: 'left', socials: 'left' }, settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
         };
         syncFormFields();
         renderAllLists();
@@ -1193,6 +1202,7 @@
       document.getElementById('personal-location').value = resumeData.personal.location || '';
       document.getElementById('personal-website').value = resumeData.personal.website || '';
       document.getElementById('personal-photo').value = resumeData.personal.photo || '';
+      if (document.getElementById('personal-photoStyle')) document.getElementById('personal-photoStyle').value = resumeData.personal.photoStyle || 'circle';
       document.getElementById('summary-text').value = resumeData.summary || '';
 
       document.getElementById('select-template').value = resumeData.settings.template || 'modern';
@@ -1210,6 +1220,7 @@
       resumeData.personal.location = document.getElementById('personal-location').value;
       resumeData.personal.website = document.getElementById('personal-website').value;
       resumeData.personal.photo = document.getElementById('personal-photo').value;
+      if (document.getElementById('personal-photoStyle')) resumeData.personal.photoStyle = document.getElementById('personal-photoStyle').value;
       saveToLocalStorage();
       renderResume();
     }
@@ -1733,15 +1744,28 @@
       resumeData.sectionOrder.forEach((secKey, index) => {
         const item = document.createElement("div");
         item.style.cssText = "background:#f8fafc; border:1px solid #cbd5e1; padding:0.5rem 0.75rem; border-radius:0.375rem; margin-bottom:0.35rem; display:flex; justify-content:space-between; align-items:center;";
+        const currentCol = (resumeData.columnAllocations && resumeData.columnAllocations[secKey]) || "right";
         item.innerHTML = `
           <span style="font-size:0.85rem; font-weight:600; color:#334155;"><i class="fa-solid fa-grip-vertical" style="color:#94a3b8; margin-right:0.5rem;"></i>${names[secKey] || secKey}</span>
-          <div class="entry-actions">
+          <div class="entry-actions" style="align-items:center; gap:0.25rem;">
+            <select class="btn btn-outline btn-sm" style="padding:2px 4px; font-size:0.75rem;" onchange="toggleSectionColumn('${secKey}', this.value)">
+              <option value="right" ${currentCol === "right" ? "selected" : ""}>Main (Right)</option>
+              <option value="left" ${currentCol === "left" ? "selected" : ""}>Sidebar (Left)</option>
+            </select>
             <button class="btn btn-outline btn-sm" onclick="moveSectionOrder(${index}, -1)"><i class="fa-solid fa-arrow-up"></i></button>
             <button class="btn btn-outline btn-sm" onclick="moveSectionOrder(${index}, 1)"><i class="fa-solid fa-arrow-down"></i></button>
           </div>
         `;
         container.appendChild(item);
       });
+    }
+
+
+    function toggleSectionColumn(secKey, colVal) {
+      if (!resumeData.columnAllocations) resumeData.columnAllocations = {};
+      resumeData.columnAllocations[secKey] = colVal;
+      saveToLocalStorage();
+      renderResume();
     }
 
     function moveSectionOrder(index, direction) {
