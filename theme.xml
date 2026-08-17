@@ -5,33 +5,18 @@
   <meta charset='utf-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
 
-  <b:include data='blog' name='all-head-content'/>
-
-  <!-- Dynamic Title Logic -->
-  <b:if cond='data:blog.pageType in {&quot;index&quot;} and data:blog.pageName == &quot;&quot; and data:blog.homepageUrl != data:blog.url'>
-    <title>All Posts - <data:blog.title/></title>
-  </b:if>
-  <b:if cond='data:blog.homepageUrl == data:blog.url'>
-    <title><data:blog.pageTitle/></title>
+  <b:if cond='data:blog.pageType == "index"'>
+    <title><data:blog.pageTitle/> - Good Builder CV | Professional Resume &amp; CV Builder</title>
   <b:else/>
-    <b:if cond='data:blog.pageType in {&quot;item&quot;,&quot;static_page&quot;}'>
-      <title><data:blog.pageName/> - <data:blog.title/></title>
+    <b:if cond='data:blog.pageType == "error_page"'>
+      <title>Page Not Found - <data:blog.title/></title>
     <b:else/>
-      <b:if cond='data:view.isLabelSearch'>
-        <title>Posts Tagged: <data:blog.searchLabel/> - <data:blog.title/></title>
-      <b:else/>
-        <b:if cond='data:view.isSearch'>
-          <title>Search Results for: <data:blog.searchQuery/> - <data:blog.title/></title>
-        <b:else/>
-          <b:if cond='data:blog.pageType in {&quot;error_page&quot;}'>
-            <title>Page Not Found - <data:blog.title/></title>
-          </b:if>
-        </b:if>
-      </b:if>
+      <title><data:blog.pageName/> - <data:blog.title/></title>
     </b:if>
   </b:if>
 
-  <!-- Adult Content Rating Meta -->
+  <b:include data='blog' name='all-head-content'/>
+
   <b:if cond='!data:blog.adultContent'>
     <meta content='general' name='rating'/>
   </b:if>
@@ -49,25 +34,24 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'></script>
 
   <b:skin><![CDATA[
-/*
-  -----------------------------------------------
-  Blogger Theme Style & Designer Variables
-  -----------------------------------------------
-  <Group description="Theme Colors" selector="body">
-    <Variable name="body.bg.color" description="Background Color" type="color" default="#f3f4f6" value="#f3f4f6"/>
-    <Variable name="body.text.color" description="Text Color" type="color" default="#1f2937" value="#1f2937"/>
-    <Variable name="primary.brand.color" description="Brand Color" type="color" default="#2563eb" value="#2563eb"/>
-  </Group>
-*/
+    /*
+      -----------------------------------------------
+      Blogger Theme Style & Designer Variables
+      -----------------------------------------------
+      <Group description="Theme Colors" selector="body">
+        <Variable name="body.bg.color" description="Background Color" type="color" default="#f1f5f9" value="#f1f5f9"/>
+        <Variable name="body.text.color" description="Text Color" type="color" default="#1f2937" value="#1f2937"/>
+        <Variable name="primary.brand.color" description="Brand Color" type="color" default="#2563eb" value="#2563eb"/>
+      </Group>
+    */
 
-
-    /* Blogger Required Reset & App Styles */
+    /* Blogger Required Reset */
     body {
       margin: 0;
       padding: 0;
-      background-color: #f3f4f6;
+      background-color: $(body.bg.color);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #1f2937;
+      color: $(body.text.color);
       line-height: 1.5;
     }
 
@@ -86,7 +70,6 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
     }
 
     .blogger-hidden-section { display: none !important; }
@@ -103,7 +86,15 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      height: 60px;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
     }
 
     .app-brand {
@@ -127,6 +118,21 @@
       font-weight: 600;
       letter-spacing: 0.03em;
     }
+
+    .legal-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .legal-nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .legal-nav a:hover { color: #38bdf8; text-decoration: underline; }
 
     .header-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
@@ -165,20 +171,18 @@
 
     .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
 
-    /* Container & Independent Scroll Panels */
+    /* Container */
     .app-container {
       display: flex;
       flex: 1;
-      height: calc(100vh - 60px);
+      height: calc(100vh - 57px);
       overflow: hidden;
-      position: relative;
     }
 
-    /* Left Editor Panel */
     .editor-panel {
       width: var(--sidebar-width);
-      min-width: 380px;
-      max-width: 550px;
+      min-width: 360px;
+      max-width: 600px;
       background: #ffffff;
       border-right: 1px solid #e2e8f0;
       display: flex;
@@ -193,7 +197,6 @@
       background: #f8fafc;
       border-bottom: 1px solid #e2e8f0;
       scrollbar-width: thin;
-      flex-shrink: 0;
     }
 
     .editor-tab-btn {
@@ -215,15 +218,7 @@
     .editor-tab-btn:hover { color: #2563eb; background: #f1f5f9; }
     .editor-tab-btn.active { color: #2563eb; border-bottom-color: #2563eb; background: #ffffff; }
 
-    /* Independent Scrollable Content for Editor */
-    .editor-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1.25rem;
-      scrollbar-width: thin;
-      scrollbar-color: #cbd5e1 #f8fafc;
-    }
-
+    .editor-content { flex: 1; overflow-y: auto; padding: 1.25rem; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
 
@@ -290,7 +285,7 @@
     }
     .swatch:hover { transform: scale(1.15); }
 
-    /* Right Preview Panel with Independent Scroll */
+    /* Right Preview Panel */
     .preview-panel {
       flex: 1;
       background: #334155;
@@ -299,9 +294,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      height: 100%;
-      scrollbar-width: thin;
-      scrollbar-color: #64748b #334155;
     }
 
     .preview-toolbar {
@@ -314,7 +306,6 @@
       gap: 1.25rem;
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.15);
       flex-wrap: wrap;
-      flex-shrink: 0;
     }
 
     .toolbar-group {
@@ -343,20 +334,6 @@
       position: relative;
       margin: 0 auto;
       box-sizing: border-box;
-      transition: width 0.3s, transform 0.3s;
-    }
-
-    /* Scrollbar Styling for Webkit */
-    .editor-content::-webkit-scrollbar, .preview-panel::-webkit-scrollbar, .editor-tabs::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .editor-content::-webkit-scrollbar-thumb, .preview-panel::-webkit-scrollbar-thumb, .editor-tabs::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
-    }
-    .editor-content::-webkit-scrollbar-thumb:hover, .preview-panel::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
     }
 
     .mobile-view-toggle {
@@ -370,60 +347,17 @@
       box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
     }
 
-    /* Responsive Design Adjustments */
-    @media (max-width: 1200px) {
-      .resume-paper {
-        width: 100%;
-        max-width: 210mm;
-      }
-    }
-
     @media (max-width: 992px) {
-      .app-header {
-        height: auto;
-        padding: 0.75rem 1rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-      .header-actions {
-        width: 100%;
-        overflow-x: auto;
-        padding-bottom: 0.25rem;
-      }
-      .app-container {
-        flex-direction: column;
-        height: auto;
-        overflow: visible;
-      }
-      .editor-panel {
-        width: 100%;
-        max-width: 100%;
-        min-width: 100%;
-        height: auto;
-        border-right: none;
-      }
-      .editor-content {
-        max-height: 500px;
-      }
-      .preview-panel {
-        width: 100%;
-        padding: 1rem 0.5rem;
-        height: auto;
-        overflow: visible;
-      }
-      .resume-paper {
-        width: 100%;
-        max-width: 100%;
-        min-height: auto;
-      }
+      .app-container { flex-direction: column; height: auto; overflow: visible; }
+      .editor-panel { width: 100%; max-width: 100%; height: auto; }
+      .preview-panel { width: 100%; padding: 1rem 0.5rem; }
+      .resume-paper { width: 100%; max-width: 210mm; min-height: auto; }
       .mobile-view-toggle { display: inline-flex; }
     }
 
     /* RESUME TEMPLATES STYLING */
     .template-modern { display: flex; min-height: 297mm; }
     .template-modern .sidebar { width: 32%; background-color: var(--accent-color, #2563eb); color: #ffffff; padding: 2rem 1.25rem; }
-    .template-modern .sidebar a { color: #ffffff; text-decoration: underline; }
     .template-modern .main-content { width: 68%; padding: 2rem 1.5rem; }
     .template-modern .profile-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1.25rem auto; display: block; border: 3px solid rgba(255,255,255,0.3); }
 
@@ -450,19 +384,17 @@
     .template-timeline .timeline-item { position: relative; padding-left: 1.5rem; border-left: 2px solid var(--accent-color, #2563eb); margin-bottom: 1.25rem; }
     .template-timeline .timeline-dot { position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-color, #2563eb); }
 
-    .template-infographic { padding: 2.5rem; background: #fafafa; }
-    .template-infographic .info-badge { background: var(--accent-color, #2563eb); color: #fff; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+    /* Europass Template */
+    .template-europass { padding: 2rem; border-left: 12px solid var(--accent-color, #2563eb); min-height: 297mm; }
+    .template-europass .europass-header { display: flex; align-items: center; gap: 1.5rem; border-bottom: 2px dashed #cbd5e1; padding-bottom: 1.25rem; margin-bottom: 1.5rem; }
 
-    .template-academic { padding: 3rem; font-family: 'Lora', 'Georgia', serif; color: #111; }
-    .template-academic .acad-header { text-align: center; margin-bottom: 2rem; border-bottom: 2px double #111; padding-bottom: 1rem; }
+    /* Sleek Dark Mode Template */
+    .template-sleek-dark { background: #0f172a !important; color: #f8fafc !important; padding: 2.5rem; min-height: 297mm; }
+    .template-sleek-dark h3 { color: var(--accent-color, #38bdf8) !important; border-bottom-color: var(--accent-color, #38bdf8) !important; }
 
-    .template-bold-split { display: flex; min-height: 297mm; }
-    .template-bold-split .left-col { width: 38%; background: #0f172a; color: #f8fafc; padding: 2.5rem 1.5rem; }
-    .template-bold-split .right-col { width: 62%; padding: 2.5rem 1.75rem; background: #ffffff; }
-    .template-bold-split .left-col a { color: #38bdf8; }
-
-    .cv-link { color: var(--accent-color, #2563eb); text-decoration: underline; word-break: break-all; }
-    .cv-link:hover { opacity: 0.85; }
+    /* Infographic & Grid Templates */
+    .template-infographic { padding: 2rem; display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; }
+    .template-minimal-grid { padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 
     @media print {
       body { background: #ffffff !important; margin: 0 !important; padding: 0 !important; }
@@ -472,32 +404,29 @@
       .resume-paper { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; page-break-after: avoid; }
     }
   ]]></b:skin>
-
 </head>
 <body>
 
-  <!-- Required Blogger Section Container (Shown on non-homepage views) -->
-  <b:if cond='data:blog.url != data:blog.homepageUrl'>
-    <div class='blogger-hidden-section'>
-      <b:section id='main' class='main' showaddelement='yes'>
-        <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'/>
-      </b:section>
-    </div>
-  </b:if>
+  <!-- Required Blogger Section Container -->
+  <div class='blogger-hidden-section'>
+    <b:section id='main' class='main' showaddelement='yes'>
+      <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'/>
+    </b:section>
+  </div>
 
   <!-- Header -->
   <header class='app-header'>
-    <div style='display:flex; align-items:center; gap:1.25rem;'>
+    <div class='header-left'>
       <a class='app-brand' expr:href='data:blog.homepageUrl'>
         <i class='fa-solid fa-file-signature'></i>
         <span>Good Builder CV</span>
         <span class='domain-badge'>goodbuilder.cv</span>
       </a>
-      <nav class='header-pages-nav' style='display:flex; gap:0.75rem; font-size:0.8rem;'>
-        <a expr:href='data:blog.canonicalHomepageUrl + "p/privacy-policy.html"' style='color:#cbd5e1; text-decoration:none;'>Privacy Policy</a>
-        <a expr:href='data:blog.canonicalHomepageUrl + "p/terms-and-conditions.html"' style='color:#cbd5e1; text-decoration:none;'>Terms</a>
-        <a expr:href='data:blog.canonicalHomepageUrl + "p/about-us.html"' style='color:#cbd5e1; text-decoration:none;'>About</a>
-        <a expr:href='data:blog.canonicalHomepageUrl + "p/contact.html"' style='color:#cbd5e1; text-decoration:none;'>Contact</a>
+      <nav class='legal-nav'>
+        <a expr:href='data:blog.canonicalHomepageUrl + "p/privacy-policy.html"'>Privacy Policy</a>
+        <a expr:href='data:blog.canonicalHomepageUrl + "p/terms.html"'>Terms</a>
+        <a expr:href='data:blog.canonicalHomepageUrl + "p/about.html"'>About</a>
+        <a expr:href='data:blog.canonicalHomepageUrl + "p/contact.html"'>Contact</a>
       </nav>
     </div>
     <div class='header-actions'>
@@ -510,13 +439,13 @@
       <button class='btn btn-outline-dark btn-sm' onclick='exportJSON()'>
         <i class='fa-solid fa-download'></i> Export JSON
       </button>
-      <button class='btn btn-outline-dark btn-sm' onclick='downloadHTML()'>
-        <i class='fa-solid fa-code'></i> Download HTML
-      </button>
       <button class='btn btn-outline-dark btn-sm' onclick='triggerImportJSON()'>
         <i class='fa-solid fa-upload'></i> Import JSON
       </button>
       <input id='json-input' style='display:none;' type='file' accept='.json' onchange='importJSON(event)'/>
+      <button class='btn btn-outline-dark btn-sm' onclick='downloadStandaloneHTML()'>
+        <i class='fa-solid fa-code'></i> Download HTML
+      </button>
       <button class='btn btn-secondary btn-sm' onclick='window.print()'>
         <i class='fa-solid fa-print'></i> Print / Browser PDF
       </button>
@@ -544,6 +473,8 @@
         <button class='editor-tab-btn' onclick='switchTab("references")'><i class='fa-solid fa-users'></i> References</button>
         <button class='editor-tab-btn' onclick='switchTab("hobbies")'><i class='fa-solid fa-heart'></i> Hobbies</button>
         <button class='editor-tab-btn' onclick='switchTab("custom")'><i class='fa-solid fa-folder-plus'></i> Custom</button>
+
+        <button class='editor-tab-btn' onclick='switchTab("studio")'><i class='fa-solid fa-palette'></i> Studio</button>
       </nav>
 
       <div class='editor-content'>
@@ -588,10 +519,7 @@
 
         <!-- Tab 2: Professional Summary -->
         <div class='tab-pane' id='tab-summary'>
-          <div class='section-title'>
-            <span>Professional Summary</span>
-            <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-summary' checked='checked' onchange='toggleSectionVisibility("summary", this.checked)'/><label for='toggle-sec-summary'>Show on Resume</label></div>
-          </div>
+          <div class='section-title'>Professional Summary</div>
           <div class='form-group'>
             <label>Describe your background, core strengths, and goals</label>
             <textarea id='summary-text' rows='6' placeholder='Passionate software architect with expertise in full-stack engineering...' oninput='updateSummary()'></textarea>
@@ -601,10 +529,7 @@
         <!-- Tab 3: Work Experience -->
         <div class='tab-pane' id='tab-experience'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>Work Experience</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-experience' checked='checked' onchange='toggleSectionVisibility("experience", this.checked)'/><label for='toggle-sec-experience'>Show</label></div>
-            </div>
+            <span>Work Experience</span>
             <button class='btn btn-primary btn-sm' onclick='addExperience()'><i class='fa-solid fa-plus'></i> Add Job</button>
           </div>
           <div id='experience-list'></div>
@@ -613,10 +538,7 @@
         <!-- Tab 4: Education -->
         <div class='tab-pane' id='tab-education'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>Education</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-education' checked='checked' onchange='toggleSectionVisibility("education", this.checked)'/><label for='toggle-sec-education'>Show</label></div>
-            </div>
+            <span>Education</span>
             <button class='btn btn-primary btn-sm' onclick='addEducation()'><i class='fa-solid fa-plus'></i> Add Degree</button>
           </div>
           <div id='education-list'></div>
@@ -625,10 +547,7 @@
         <!-- Tab 5: Skills -->
         <div class='tab-pane' id='tab-skills'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>Skills &amp; Expertise</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-skills' checked='checked' onchange='toggleSectionVisibility("skills", this.checked)'/><label for='toggle-sec-skills'>Show</label></div>
-            </div>
+            <span>Skills &amp; Expertise</span>
             <button class='btn btn-primary btn-sm' onclick='addSkill()'><i class='fa-solid fa-plus'></i> Add Skill</button>
           </div>
           <div id='skills-list'></div>
@@ -637,10 +556,7 @@
         <!-- Tab 6: Projects -->
         <div class='tab-pane' id='tab-projects'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>Projects</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-projects' checked='checked' onchange='toggleSectionVisibility("projects", this.checked)'/><label for='toggle-sec-projects'>Show</label></div>
-            </div>
+            <span>Projects</span>
             <button class='btn btn-primary btn-sm' onclick='addProject()'><i class='fa-solid fa-plus'></i> Add Project</button>
           </div>
           <div id='projects-list'></div>
@@ -649,10 +565,7 @@
         <!-- Tab 7: Languages -->
         <div class='tab-pane' id='tab-languages'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>Languages</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-languages' checked='checked' onchange='toggleSectionVisibility("languages", this.checked)'/><label for='toggle-sec-languages'>Show</label></div>
-            </div>
+            <span>Languages</span>
             <button class='btn btn-primary btn-sm' onclick='addLanguage()'><i class='fa-solid fa-plus'></i> Add Language</button>
           </div>
           <div id='languages-list'></div>
@@ -661,10 +574,7 @@
         <!-- Tab 8: Certifications -->
         <div class='tab-pane' id='tab-certifications'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>Certifications</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-certifications' checked='checked' onchange='toggleSectionVisibility("certifications", this.checked)'/><label for='toggle-sec-certifications'>Show</label></div>
-            </div>
+            <span>Certifications</span>
             <button class='btn btn-primary btn-sm' onclick='addCertification()'><i class='fa-solid fa-plus'></i> Add Cert</button>
           </div>
           <div id='certifications-list'></div>
@@ -673,10 +583,7 @@
         <!-- Tab 9: Social Links -->
         <div class='tab-pane' id='tab-socials'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>Social &amp; Web Links</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-socials' checked='checked' onchange='toggleSectionVisibility("socials", this.checked)'/><label for='toggle-sec-socials'>Show</label></div>
-            </div>
+            <span>Social &amp; Web Links</span>
             <button class='btn btn-primary btn-sm' onclick='addSocial()'><i class='fa-solid fa-plus'></i> Add Link</button>
           </div>
           <div id='socials-list'></div>
@@ -685,10 +592,7 @@
         <!-- Tab 10: References -->
         <div class='tab-pane' id='tab-references'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>References</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-references' checked='checked' onchange='toggleSectionVisibility("references", this.checked)'/><label for='toggle-sec-references'>Show</label></div>
-            </div>
+            <span>References</span>
             <button class='btn btn-primary btn-sm' onclick='addReference()'><i class='fa-solid fa-plus'></i> Add Reference</button>
           </div>
           <div id='references-list'></div>
@@ -697,10 +601,7 @@
         <!-- Tab 11: Hobbies & Interests -->
         <div class='tab-pane' id='tab-hobbies'>
           <div class='section-title'>
-            <div style='display:flex; align-items:center; gap:0.75rem;'>
-              <span>Hobbies &amp; Interests</span>
-              <div class='checkbox-group' style='margin:0;'><input type='checkbox' id='toggle-sec-hobbies' checked='checked' onchange='toggleSectionVisibility("hobbies", this.checked)'/><label for='toggle-sec-hobbies'>Show</label></div>
-            </div>
+            <span>Hobbies &amp; Interests</span>
             <button class='btn btn-primary btn-sm' onclick='addHobby()'><i class='fa-solid fa-plus'></i> Add Hobby</button>
           </div>
           <div id='hobbies-list'></div>
@@ -713,6 +614,40 @@
             <button class='btn btn-primary btn-sm' onclick='addCustomSection()'><i class='fa-solid fa-plus'></i> Add Custom Section</button>
           </div>
           <div id='custom-sections-list'></div>
+        </div>
+
+        <!-- Tab 13: Custom Template Studio -->
+        <div class='tab-pane' id='tab-studio'>
+          <div class='section-title'>Custom Template Studio</div>
+          <p style='font-size:0.85rem; color:#475569;'>Design your custom template CSS and HTML layout structure, save it to your library, or export/import template files.</p>
+
+          <div class='form-group'>
+            <label>Custom Template Name</label>
+            <input id='custom-template-name' type='text' placeholder='e.g. My Dark Cyberpunk CV'/>
+          </div>
+
+          <div class='form-group'>
+            <label>Custom CSS Rules</label>
+            <textarea id='custom-template-css' rows='5' placeholder='.my-custom-cv { padding: 2rem; background: #1a1a1a; color: #fff; }'></textarea>
+          </div>
+
+          <div class='form-group'>
+            <label>Custom Layout HTML Structure</label>
+            <textarea id='custom-template-html' rows='8' placeholder='&lt;div class=&quot;my-custom-cv&quot;&gt;&lt;h1&gt;{{NAME}}&lt;/h1&gt;&lt;p&gt;{{TITLE}}&lt;/p&gt;&lt;div&gt;{{SUMMARY}}&lt;/div&gt;&lt;div&gt;{{EXPERIENCE}}&lt;/div&gt;&lt;/div&gt;'></textarea>
+            <span style='font-size:0.75rem; color:#64748b;'>Available placeholders: {{NAME}}, {{TITLE}}, {{EMAIL}}, {{PHONE}}, {{LOCATION}}, {{WEBSITE}}, {{PHOTO}}, {{SUMMARY}}, {{EXPERIENCE}}, {{EDUCATION}}, {{SKILLS}}, {{PROJECTS}}, {{LANGUAGES}}, {{CERTIFICATIONS}}, {{SOCIALS}}, {{REFERENCES}}, {{CUSTOM}}</span>
+          </div>
+
+          <div style='display:flex; gap:0.5rem; flex-wrap:wrap;'>
+            <button class='btn btn-primary btn-sm' onclick='saveCustomTemplate()'><i class='fa-solid fa-save'></i> Save Template</button>
+            <button class='btn btn-outline btn-sm' onclick='exportCustomTemplate()'><i class='fa-solid fa-download'></i> Export Template JSON</button>
+            <button class='btn btn-outline btn-sm' onclick='triggerImportCustomTemplate()'><i class='fa-solid fa-upload'></i> Import Template JSON</button>
+            <input id='custom-template-file-input' style='display:none;' type='file' accept='.json' onchange='importCustomTemplate(event)'/>
+          </div>
+
+          <div style='margin-top:1.5rem;'>
+            <div style='font-weight:700; font-size:0.9rem; margin-bottom:0.5rem; color:#0f172a;'>Your Custom Templates Library</div>
+            <div id='custom-templates-library'></div>
+          </div>
         </div>
 
       </div>
@@ -734,11 +669,11 @@
             <option value='executive'>Executive Corporate</option>
             <option value='serif'>Elegant Serif</option>
             <option value='timeline'>Timeline Professional</option>
-            <option value='infographic'>Infographic Minimal</option>
-            <option value='academic'>Academic CV</option>
-            <option value='boldsplit'>Bold Modern Split</option>
-            <option value='europe'>European Format CV</option>
-            <option value='minimaldark'>Sleek Dark Mode CV</option>
+            <option value='europass'>European Format (Europass)</option>
+            <option value='sleekdark'>Sleek Dark Mode</option>
+            <option value='boldmodern'>Bold Modern Split</option>
+            <option value='infographic'>Infographic Sidebar</option>
+            <option value='minimalgrid'>Minimal Two-Column Grid</option>
           </select>
         </div>
 
@@ -751,7 +686,7 @@
             <div class='swatch' style='background:#059669;' title='Emerald' onclick='changeAccentColor("#059669")'></div>
             <div class='swatch' style='background:#7c3aed;' title='Purple Accent' onclick='changeAccentColor("#7c3aed")'></div>
             <div class='swatch' style='background:#dc2626;' title='Crimson' onclick='changeAccentColor("#dc2626")'></div>
-            <div class='swatch' style='background:#d97706;' title='Amber' onclick='changeAccentColor("#d97706")'></div>
+            <div class='swatch' style='background:#ea580c;' title='Orange' onclick='changeAccentColor("#ea580c")'></div>
             <div class='swatch' style='background:#0284c7;' title='Sky Blue' onclick='changeAccentColor("#0284c7")'></div>
           </div>
         </div>
@@ -789,6 +724,9 @@
         </div>
       </div>
 
+      <!-- Inject Dynamic Custom CSS Style tag for Custom Studio Templates -->
+      <style id='custom-template-style-element'></style>
+
       <!-- Resume Document Paper -->
       <div class='resume-paper' id='resume-preview'>
         <!-- Injected via JavaScript -->
@@ -818,9 +756,10 @@
       references: [],
       hobbies: [],
       customSections: [],
-      hiddenSections: {},
       settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
     };
+
+    let userCustomTemplates = [];
 
     const sampleData = {
       personal: {
@@ -916,8 +855,11 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       loadFromLocalStorage();
+      loadCustomTemplatesFromLocalStorage();
+      updateTemplateDropdownOptions();
       syncFormFields();
       renderAllLists();
+      renderCustomTemplatesLibrary();
       renderResume();
     });
 
@@ -932,6 +874,17 @@
       } catch (e) {
         resumeData = JSON.parse(JSON.stringify(sampleData));
       }
+    }
+
+    function saveCustomTemplatesToLocalStorage() {
+      try { localStorage.setItem('goodbuilder_custom_templates', JSON.stringify(userCustomTemplates)); } catch (e) {}
+    }
+
+    function loadCustomTemplatesFromLocalStorage() {
+      try {
+        const saved = localStorage.getItem('goodbuilder_custom_templates');
+        userCustomTemplates = saved ? JSON.parse(saved) : [];
+      } catch (e) { userCustomTemplates = []; }
     }
 
     function loadSampleData() {
@@ -969,67 +922,6 @@
       downloadAnchor.remove();
     }
 
-    function downloadHTML() {
-      const previewEl = document.getElementById('resume-preview');
-      if (!previewEl) return;
-      const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <title>${resumeData.personal.fullName || 'Resume'} - Good Builder CV</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-  <style>
-    body { margin: 0; padding: 2rem; background: #f8fafc; font-family: '${resumeData.settings.fontFamily || 'Inter'}', sans-serif; }
-    .cv-link { color: ${resumeData.settings.accentColor || '#2563eb'}; text-decoration: underline; word-break: break-all; }
-    .resume-paper { background: #ffffff; width: 210mm; min-height: 297mm; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); box-sizing: border-box; }
-    .template-modern { display: flex; min-height: 297mm; }
-    .template-modern .sidebar { width: 32%; background-color: ${resumeData.settings.accentColor || '#2563eb'}; color: #ffffff; padding: 2rem 1.25rem; }
-    .template-modern .sidebar a { color: #ffffff; text-decoration: underline; }
-    .template-modern .main-content { width: 68%; padding: 2rem 1.5rem; }
-    .template-modern .profile-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1.25rem auto; display: block; border: 3px solid rgba(255,255,255,0.3); }
-    .template-classic { padding: 2.5rem; }
-    .template-classic .header-classic { text-align: center; border-bottom: 2px solid ${resumeData.settings.accentColor || '#1e293b'}; padding-bottom: 1.25rem; margin-bottom: 1.5rem; }
-    .template-classic .name-classic { font-size: 2.2rem; font-weight: 700; color: ${resumeData.settings.accentColor || '#1e293b'}; text-transform: uppercase; letter-spacing: 0.05em; }
-    .template-minimal { padding: 2.5rem; }
-    .template-minimal .header-minimal { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1.5rem; }
-    .template-creative .banner { background: ${resumeData.settings.accentColor || '#2563eb'}; color: #ffffff; padding: 2.5rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
-    .template-creative .banner-img { width: 110px; height: 110px; border-radius: 12px; object-fit: cover; border: 3px solid #ffffff; }
-    .template-compact { padding: 1.75rem; font-size: 0.85rem; }
-    .template-executive { padding: 2.5rem; border-top: 8px solid ${resumeData.settings.accentColor || '#0f172a'}; }
-    .template-executive .exec-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
-    .template-serif { padding: 3rem; font-family: 'Merriweather', 'Lora', serif; line-height: 1.6; }
-    .template-serif .serif-header { text-align: center; margin-bottom: 2rem; }
-    .template-serif .serif-title { font-size: 2.2rem; font-weight: 700; color: ${resumeData.settings.accentColor || '#1e293b'}; }
-    .template-timeline { padding: 2.5rem; }
-    .template-timeline .timeline-item { position: relative; padding-left: 1.5rem; border-left: 2px solid ${resumeData.settings.accentColor || '#2563eb'}; margin-bottom: 1.25rem; }
-    .template-timeline .timeline-dot { position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${resumeData.settings.accentColor || '#2563eb'}; }
-  </style>
-</head>
-<body>
-  <div class="resume-paper" style="--accent-color:${resumeData.settings.accentColor || '#2563eb'}; font-size:${resumeData.settings.fontSize || '14px'}; font-family:'${resumeData.settings.fontFamily || 'Inter'}', sans-serif;">
-    ${previewEl.innerHTML}
-  </div>
-</body>
-</html>`;
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute('href', url);
-      downloadAnchor.setAttribute('download', `${(resumeData.personal.fullName || 'GoodBuilderCV').replace(/\s+/g, '_')}.html`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function toggleSectionVisibility(sectionKey, isVisible) {
-      if (!resumeData.hiddenSections) resumeData.hiddenSections = {};
-      resumeData.hiddenSections[sectionKey] = !isVisible;
-      saveToLocalStorage();
-      renderResume();
-    }
-
     function triggerImportJSON() { document.getElementById('json-input').click(); }
 
     function importJSON(event) {
@@ -1063,6 +955,39 @@
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       html2pdf().set(opt).from(element).save();
+    }
+
+    function downloadStandaloneHTML() {
+      const resumeContent = document.getElementById('resume-preview').innerHTML;
+      const customCss = document.getElementById('custom-template-style-element').innerHTML;
+      const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>${escapeXml(resumeData.personal.fullName) || 'Resume'} - Good Builder CV</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body { margin: 0; padding: 2rem; background: #f8fafc; font-family: '${resumeData.settings.fontFamily || 'Inter'}', sans-serif; }
+    .cv-link { color: ${resumeData.settings.accentColor || '#2563eb'}; text-decoration: underline; word-break: break-all; }
+    .resume-paper { background: #ffffff; width: 210mm; min-height: 297mm; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); box-sizing: border-box; }
+    ${customCss}
+  </style>
+</head>
+<body>
+  <div class="resume-paper" style="font-family:'${resumeData.settings.fontFamily || 'Inter'}', sans-serif; font-size:${resumeData.settings.fontSize || '14px'}; --accent-color:${resumeData.settings.accentColor || '#2563eb'};">
+    ${resumeContent}
+  </div>
+</body>
+</html>`;
+
+      const dataStr = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `${(resumeData.personal.fullName || 'Resume').replace(/\s+/g, '_')}_GoodBuilderCV.html`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
     }
 
     function switchTab(tabId) {
@@ -1146,11 +1071,119 @@
     function changeFontSize(val) { resumeData.settings.fontSize = val; saveToLocalStorage(); renderResume(); }
     function changeMargin(val) { resumeData.settings.margin = val; saveToLocalStorage(); renderResume(); }
 
+    /* CUSTOM TEMPLATE STUDIO FUNCTIONS */
+    function updateTemplateDropdownOptions() {
+      const select = document.getElementById('select-template');
+      select.querySelectorAll('option[data-custom="true"]').forEach(opt => opt.remove());
+      userCustomTemplates.forEach(ct => {
+        const opt = document.createElement('option');
+        opt.value = ct.id;
+        opt.innerText = `Custom: ${ct.name}`;
+        opt.setAttribute('data-custom', 'true');
+        select.appendChild(opt);
+      });
+    }
+
+    function saveCustomTemplate() {
+      const name = document.getElementById('custom-template-name').value.trim();
+      const css = document.getElementById('custom-template-css').value;
+      const html = document.getElementById('custom-template-html').value;
+      if (!name || !html) { alert('Please enter both a template name and HTML structure.'); return; }
+
+      const id = 'custom_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      const existingIndex = userCustomTemplates.findIndex(t => t.id === id);
+      const newTemplate = { id, name, css, html };
+
+      if (existingIndex >= 0) userCustomTemplates[existingIndex] = newTemplate;
+      else userCustomTemplates.push(newTemplate);
+
+      saveCustomTemplatesToLocalStorage();
+      updateTemplateDropdownOptions();
+      renderCustomTemplatesLibrary();
+      changeTemplate(id);
+      alert(`Custom Template "${name}" saved and set as current!`);
+    }
+
+    function renderCustomTemplatesLibrary() {
+      const container = document.getElementById('custom-templates-library');
+      if (!container) return;
+      container.innerHTML = '';
+      if (!userCustomTemplates.length) {
+        container.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No custom templates saved yet.</div>';
+        return;
+      }
+      userCustomTemplates.forEach(t => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background:#f8fafc; border:1px solid #e2e8f0; padding:0.6rem 0.8rem; border-radius:0.375rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;';
+        item.innerHTML = `
+          <span style="font-size:0.85rem; font-weight:600;">${escapeXml(t.name)}</span>
+          <div style="display:flex; gap:0.25rem;">
+            <button class="btn btn-primary btn-sm" onclick="applyCustomTemplate('${t.id}')">Apply</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCustomTemplate('${t.id}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function applyCustomTemplate(id) {
+      const t = userCustomTemplates.find(x => x.id === id);
+      if (t) {
+        document.getElementById('custom-template-name').value = t.name;
+        document.getElementById('custom-template-css').value = t.css;
+        document.getElementById('custom-template-html').value = t.html;
+        changeTemplate(id);
+      }
+    }
+
+    function deleteCustomTemplate(id) {
+      if (confirm('Delete this custom template?')) {
+        userCustomTemplates = userCustomTemplates.filter(t => t.id !== id);
+        saveCustomTemplatesToLocalStorage();
+        updateTemplateDropdownOptions();
+        renderCustomTemplatesLibrary();
+        if (resumeData.settings.template === id) changeTemplate('modern');
+      }
+    }
+
+    function exportCustomTemplate() {
+      const name = document.getElementById('custom-template-name').value.trim() || 'Custom_Template';
+      const css = document.getElementById('custom-template-css').value;
+      const html = document.getElementById('custom-template-html').value;
+      const exportData = { type: 'goodbuilder_template', name, css, html };
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `${name.replace(/\s+/g, '_')}_template.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function triggerImportCustomTemplate() { document.getElementById('custom-template-file-input').click(); }
+
+    function importCustomTemplate(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.name && imported.html) {
+            document.getElementById('custom-template-name').value = imported.name;
+            document.getElementById('custom-template-css').value = imported.css || '';
+            document.getElementById('custom-template-html').value = imported.html;
+            saveCustomTemplate();
+          } else { alert('Invalid template file format.'); }
+        } catch (err) { alert('Error parsing template JSON.'); }
+      };
+      reader.readAsText(file);
+    }
+
     // FORM LIST RENDERERS
     function renderExperienceList() {
       const container = document.getElementById('experience-list');
       container.innerHTML = '';
-      if (!resumeData.experience) resumeData.experience = [];
       resumeData.experience.forEach((item, index) => {
         const card = document.createElement('div');
         card.className = 'entry-card';
@@ -1169,14 +1202,14 @@
             <div class="form-group"><label>Location</label><input type="text" value="${escapeAttr(item.location)}" oninput="updateItemField('experience', '${item.id}', 'location', this.value)"/></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>Start Date</label><input type="month" value="${escapeAttr(item.startDate)}" oninput="updateItemField('experience', '${item.id}', 'startDate', this.value)" onchange="updateItemField('experience', '${item.id}', 'startDate', this.value)"/></div>
-            <div class="form-group"><label>End Date</label><input type="month" value="${escapeAttr(item.endDate)}" ${item.current ? 'disabled="disabled"' : ''} oninput="updateItemField('experience', '${item.id}', 'endDate', this.value)" onchange="updateItemField('experience', '${item.id}', 'endDate', this.value)"/></div>
+            <div class="form-group"><label>Start Date</label><input type="month" value="${item.startDate || ''}" oninput="updateItemField('experience', '${item.id}', 'startDate', this.value)" onchange="updateItemField('experience', '${item.id}', 'startDate', this.value)"/></div>
+            <div class="form-group"><label>End Date</label><input type="month" value="${item.endDate || ''}" ${item.current ? 'disabled' : ''} oninput="updateItemField('experience', '${item.id}', 'endDate', this.value)" onchange="updateItemField('experience', '${item.id}', 'endDate', this.value)"/></div>
           </div>
           <div class="checkbox-group">
-            <input type="checkbox" id="exp-curr-${item.id}" ${item.current ? 'checked="checked"' : ''} onchange="updateExperienceCurrent('${item.id}', this.checked)"/>
+            <input type="checkbox" id="exp-curr-${item.id}" ${item.current ? 'checked' : ''} onchange="updateExperienceCurrent('${item.id}', this.checked)"/>
             <label for="exp-curr-${item.id}">I currently work here</label>
           </div>
-          <div class="form-group" style="margin-top:0.75rem;"><label>Description &amp; Bullet Points</label><textarea rows="3" oninput="updateItemField('experience', '${item.id}', 'description', this.value)">${escapeXml(item.description)}</textarea></div>
+          <div class="form-group" style="margin-top:0.75rem;"><label>Description &amp; Bullet Points</label><textarea rows="3" oninput="updateItemField('experience', '${item.id}', 'description', this.value)">${escapeXml(item.description || '')}</textarea></div>
         `;
         container.appendChild(card);
       });
@@ -1201,12 +1234,12 @@
     function renderEducationList() {
       const container = document.getElementById('education-list');
       container.innerHTML = '';
-      resumeData.education.forEach((item, index) => {
+      resumeData.education.forEach((item) => {
         const card = document.createElement('div');
         card.className = 'entry-card';
         card.innerHTML = `
           <div class="entry-card-header">
-            <span class="entry-card-title">${item.degree || 'Degree'} - ${item.institution || 'School'}</span>
+            <span class="entry-card-title">${escapeXml(item.degree || 'Degree')} - ${escapeXml(item.institution || 'School')}</span>
             <div class="entry-actions"><button class="btn btn-danger btn-sm" onclick="removeItem('education', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           </div>
           <div class="form-group"><label>Degree / Qualification</label><input type="text" value="${escapeAttr(item.degree)}" oninput="updateItemField('education', '${item.id}', 'degree', this.value)"/></div>
@@ -1219,7 +1252,7 @@
             <div class="form-group"><label>End Date</label><input type="month" value="${item.endDate || ''}" oninput="updateItemField('education', '${item.id}', 'endDate', this.value)" onchange="updateItemField('education', '${item.id}', 'endDate', this.value)"/></div>
           </div>
           <div class="form-group"><label>GPA / Grade (Optional)</label><input type="text" value="${escapeAttr(item.gpa)}" oninput="updateItemField('education', '${item.id}', 'gpa', this.value)"/></div>
-          <div class="form-group"><label>Description / Honors</label><textarea rows="2" oninput="updateItemField('education', '${item.id}', 'description', this.value)">${item.description || ''}</textarea></div>
+          <div class="form-group"><label>Description / Honors</label><textarea rows="2" oninput="updateItemField('education', '${item.id}', 'description', this.value)">${escapeXml(item.description || '')}</textarea></div>
         `;
         container.appendChild(card);
       });
@@ -1233,7 +1266,6 @@
     function renderSkillsList() {
       const container = document.getElementById('skills-list');
       container.innerHTML = '';
-      if (!resumeData.skills) resumeData.skills = [];
       resumeData.skills.forEach((item) => {
         const card = document.createElement('div');
         card.className = 'entry-card';
@@ -1241,7 +1273,7 @@
           <div class="entry-card-header"><span class="entry-card-title">${escapeXml(item.name || 'New Skill')}</span><button class="btn btn-danger btn-sm" onclick="removeItem('skills', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-row">
             <div class="form-group"><label>Skill Name</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('skills', '${item.id}', 'name', this.value)"/></div>
-            <div class="form-group"><label>Proficiency Rating (${escapeXml(item.level || '80')}%)</label><input type="range" min="10" max="100" step="5" value="${escapeAttr(item.level || '80')}" oninput="updateItemField('skills', '${item.id}', 'level', this.value)"/></div>
+            <div class="form-group"><label>Proficiency Rating (${item.level || '80'}%)</label><input type="range" min="10" max="100" step="5" value="${item.level || '80'}" oninput="updateItemField('skills', '${item.id}', 'level', this.value)"/></div>
           </div>
         `;
         container.appendChild(card);
@@ -1257,13 +1289,13 @@
         const card = document.createElement('div');
         card.className = 'entry-card';
         card.innerHTML = `
-          <div class="entry-card-header"><span class="entry-card-title">${item.title || 'Project'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('projects', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
+          <div class="entry-card-header"><span class="entry-card-title">${escapeXml(item.title || 'Project')}</span><button class="btn btn-danger btn-sm" onclick="removeItem('projects', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-row">
             <div class="form-group"><label>Project Title</label><input type="text" value="${escapeAttr(item.title)}" oninput="updateItemField('projects', '${item.id}', 'title', this.value)"/></div>
             <div class="form-group"><label>Link / URL</label><input type="url" value="${escapeAttr(item.link)}" oninput="updateItemField('projects', '${item.id}', 'link', this.value)"/></div>
           </div>
           <div class="form-group"><label>Technologies Used</label><input type="text" placeholder="e.g. React, Node.js" value="${escapeAttr(item.tech)}" oninput="updateItemField('projects', '${item.id}', 'tech', this.value)"/></div>
-          <div class="form-group"><label>Description</label><textarea rows="2" oninput="updateItemField('projects', '${item.id}', 'description', this.value)">${item.description || ''}</textarea></div>
+          <div class="form-group"><label>Description</label><textarea rows="2" oninput="updateItemField('projects', '${item.id}', 'description', this.value)">${escapeXml(item.description || '')}</textarea></div>
         `;
         container.appendChild(card);
       });
@@ -1277,7 +1309,7 @@
         const card = document.createElement('div');
         card.className = 'entry-card';
         card.innerHTML = `
-          <div class="entry-card-header"><span class="entry-card-title">${item.name || 'Language'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('languages', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
+          <div class="entry-card-header"><span class="entry-card-title">${escapeXml(item.name || 'Language')}</span><button class="btn btn-danger btn-sm" onclick="removeItem('languages', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-row">
             <div class="form-group"><label>Language</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('languages', '${item.id}', 'name', this.value)"/></div>
             <div class="form-group"><label>Proficiency</label><input type="text" value="${escapeAttr(item.level)}" oninput="updateItemField('languages', '${item.id}', 'level', this.value)"/></div>
@@ -1295,7 +1327,7 @@
         const card = document.createElement('div');
         card.className = 'entry-card';
         card.innerHTML = `
-          <div class="entry-card-header"><span class="entry-card-title">${item.title || 'Certification'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('certifications', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
+          <div class="entry-card-header"><span class="entry-card-title">${escapeXml(item.title || 'Certification')}</span><button class="btn btn-danger btn-sm" onclick="removeItem('certifications', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-group"><label>Certification Name</label><input type="text" value="${escapeAttr(item.title)}" oninput="updateItemField('certifications', '${item.id}', 'title', this.value)"/></div>
           <div class="form-row">
             <div class="form-group"><label>Issuer</label><input type="text" value="${escapeAttr(item.issuer)}" oninput="updateItemField('certifications', '${item.id}', 'issuer', this.value)"/></div>
@@ -1315,12 +1347,12 @@
         const card = document.createElement('div');
         card.className = 'entry-card';
         card.innerHTML = `
-          <div class="entry-card-header"><span class="entry-card-title">${item.platform || 'Link'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('socials', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
+          <div class="entry-card-header"><span class="entry-card-title">${escapeXml(item.platform || 'Link')}</span><button class="btn btn-danger btn-sm" onclick="removeItem('socials', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-row">
             <div class="form-group"><label>Platform</label><input type="text" value="${escapeAttr(item.platform)}" oninput="updateItemField('socials', '${item.id}', 'platform', this.value)"/></div>
-            <div class="form-group"><label>Username / Handle</label><input type="text" value="${escapeAttr(item.username)}" oninput="updateItemField('socials', '${item.id}', 'username', this.value)"/></div>
+            <div class="form-group"><label>Username</label><input type="text" value="${escapeAttr(item.username)}" oninput="updateItemField('socials', '${item.id}', 'username', this.value)"/></div>
           </div>
-          <div class="form-group"><label>Full URL Link</label><input type="url" value="${escapeAttr(item.url)}" oninput="updateItemField('socials', '${item.id}', 'url', this.value)"/></div>
+          <div class="form-group"><label>URL</label><input type="url" value="${escapeAttr(item.url)}" oninput="updateItemField('socials', '${item.id}', 'url', this.value)"/></div>
         `;
         container.appendChild(card);
       });
@@ -1334,7 +1366,7 @@
         const card = document.createElement('div');
         card.className = 'entry-card';
         card.innerHTML = `
-          <div class="entry-card-header"><span class="entry-card-title">${item.name || 'Reference'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('references', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
+          <div class="entry-card-header"><span class="entry-card-title">${escapeXml(item.name || 'Reference')}</span><button class="btn btn-danger btn-sm" onclick="removeItem('references', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-group"><label>Full Name</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('references', '${item.id}', 'name', this.value)"/></div>
           <div class="form-group"><label>Job Title &amp; Company</label><input type="text" value="${escapeAttr(item.title)}" oninput="updateItemField('references', '${item.id}', 'title', this.value)"/></div>
           <div class="form-group"><label>Contact Info</label><input type="text" value="${escapeAttr(item.contact)}" oninput="updateItemField('references', '${item.id}', 'contact', this.value)"/></div>
@@ -1351,7 +1383,7 @@
         const card = document.createElement('div');
         card.className = 'entry-card';
         card.innerHTML = `
-          <div class="entry-card-header"><span class="entry-card-title">${item.name || 'Hobby'}</span><button class="btn btn-danger btn-sm" onclick="removeItem('hobbies', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
+          <div class="entry-card-header"><span class="entry-card-title">${escapeXml(item.name || 'Hobby')}</span><button class="btn btn-danger btn-sm" onclick="removeItem('hobbies', '${item.id}')"><i class="fa-solid fa-trash"></i></button></div>
           <div class="form-group"><label>Hobby / Interest</label><input type="text" value="${escapeAttr(item.name)}" oninput="updateItemField('hobbies', '${item.id}', 'name', this.value)"/></div>
         `;
         container.appendChild(card);
@@ -1362,7 +1394,6 @@
     function renderCustomSectionsList() {
       const container = document.getElementById('custom-sections-list');
       container.innerHTML = '';
-      if (!resumeData.customSections) resumeData.customSections = [];
       resumeData.customSections.forEach((sec, secIndex) => {
         const card = document.createElement('div');
         card.className = 'entry-card';
@@ -1390,47 +1421,45 @@
         container.appendChild(card);
 
         const itemContainer = card.querySelector(`#custom-items-${sec.id}`);
-        if (sec.items) {
-          sec.items.forEach((item, itemIndex) => {
-            const itemBox = document.createElement('div');
-            itemBox.setAttribute('style', 'border: 1px dashed #cbd5e1; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 0.5rem; background:#fff;');
-            itemBox.innerHTML = `
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                <span style="font-size:0.8rem; font-weight:600; color:#64748b;">Item #${itemIndex + 1}</span>
-                <div class="entry-actions">
-                  <button class="btn btn-outline btn-sm" onclick="moveCustomItem('${sec.id}', ${itemIndex}, -1)"><i class="fa-solid fa-arrow-up"></i></button>
-                  <button class="btn btn-outline btn-sm" onclick="moveCustomItem('${sec.id}', ${itemIndex}, 1)"><i class="fa-solid fa-arrow-down"></i></button>
-                  <button class="btn btn-danger btn-sm" onclick="removeCustomItem('${sec.id}', '${item.id}')"><i class="fa-solid fa-xmark"></i></button>
-                </div>
+        sec.items.forEach((item, itemIndex) => {
+          const itemBox = document.createElement('div');
+          itemBox.style.cssText = 'border: 1px dashed #cbd5e1; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 0.5rem; background:#fff;';
+          itemBox.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span style="font-size:0.8rem; font-weight:600; color:#64748b;">Item #${itemIndex + 1}</span>
+              <div class="entry-actions">
+                <button class="btn btn-outline btn-sm" onclick="moveCustomItem('${sec.id}', ${itemIndex}, -1)"><i class="fa-solid fa-arrow-up"></i></button>
+                <button class="btn btn-outline btn-sm" onclick="moveCustomItem('${sec.id}', ${itemIndex}, 1)"><i class="fa-solid fa-arrow-down"></i></button>
+                <button class="btn btn-danger btn-sm" onclick="removeCustomItem('${sec.id}', '${item.id}')"><i class="fa-solid fa-xmark"></i></button>
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Title / Role</label>
-                  <input type="text" value="${escapeAttr(item.title)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'title', this.value)"/>
-                </div>
-                <div class="form-group">
-                  <label>Subtitle / Organization</label>
-                  <input type="text" value="${escapeAttr(item.subtitle)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'subtitle', this.value)"/>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Date / Period</label>
-                  <input type="text" placeholder="e.g. 2021 - Present" value="${escapeAttr(item.date)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'date', this.value)"/>
-                </div>
-                <div class="form-group">
-                  <label>Location / Link</label>
-                  <input type="text" placeholder="e.g. Remote or https://..." value="${escapeAttr(item.location)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'location', this.value)"/>
-                </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Title / Role</label>
+                <input type="text" value="${escapeAttr(item.title)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'title', this.value)"/>
               </div>
               <div class="form-group">
-                <label>Description</label>
-                <textarea rows="2" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'description', this.value)">${escapeXml(item.description)}</textarea>
+                <label>Subtitle / Organization</label>
+                <input type="text" value="${escapeAttr(item.subtitle)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'subtitle', this.value)"/>
               </div>
-            `;
-            itemContainer.appendChild(itemBox);
-          });
-        }
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Date / Period</label>
+                <input type="text" placeholder="e.g. 2021 - Present" value="${escapeAttr(item.date)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'date', this.value)"/>
+              </div>
+              <div class="form-group">
+                <label>Location / Link (Optional)</label>
+                <input type="text" placeholder="e.g. Remote or https://..." value="${escapeAttr(item.location)}" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'location', this.value)"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description / Details</label>
+              <textarea rows="2" oninput="updateCustomItemField('${sec.id}', '${item.id}', 'description', this.value)">${escapeXml(item.description || '')}</textarea>
+            </div>
+          `;
+          itemContainer.appendChild(itemBox);
+        });
       });
     }
 
@@ -1520,16 +1549,9 @@
       }
     }
 
-    function escapeXml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-    function escapeAttr(str) { return escapeXml(str); }
+    function escapeXml(str) { return str ? String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; }
+    function escapeAttr(str) { return str ? String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; }
+
     function formatDate(dateStr) {
       if (!dateStr) return '';
       const [year, month] = dateStr.split('-');
@@ -1539,10 +1561,25 @@
       return date.toLocaleString('default', { month: 'short' }) + ' ' + year;
     }
 
+    function formatURL(url) {
+      if (!url) return '';
+      if (!/^https?:\/\//i.test(url)) return 'https://' + url;
+      return url;
+    }
+
+    function formatMailto(email) {
+      if (!email) return '';
+      return 'mailto:' + email.trim();
+    }
+
+    function formatTel(phone) {
+      if (!phone) return '';
+      return 'tel:' + phone.replace(/[^\d+]/g, '');
+    }
+
     // SECTION RENDER HELPERS
-    function getSectionHTML(title, content, key) {
+    function getSectionHTML(title, content) {
       if (!content) return '';
-      if (key && resumeData.hiddenSections && resumeData.hiddenSections[key]) return '';
       return `<div style="margin-bottom:1.25rem;">
         <h3 style="color:var(--accent-color); font-size:1.05rem; font-weight:700; border-bottom:2px solid var(--accent-color); padding-bottom:3px; margin-bottom:0.6rem; text-transform:uppercase;">${escapeXml(title)}</h3>
         ${content}
@@ -1550,12 +1587,12 @@
     }
 
     function renderCommonExperience() {
-      if (!resumeData.experience || !resumeData.experience.length) return '';
+      if (!resumeData.experience.length) return '';
       return resumeData.experience.map(e => `
         <div style="margin-bottom:0.85rem;">
           <div style="display:flex; justify-content:space-between; font-weight:700;">
             <span style="color:#0f172a;">${escapeXml(e.title)}</span>
-            <span style="color:var(--accent-color); font-size:0.8rem;">${escapeXml(formatDate(e.startDate))}${e.startDate || e.endDate || e.current ? ' - ' : ''}${e.current ? 'Present' : escapeXml(formatDate(e.endDate))}</span>
+            <span style="color:var(--accent-color); font-size:0.8rem;">${formatDate(e.startDate)}${e.startDate || e.endDate || e.current ? ' - ' : ''}${e.current ? 'Present' : formatDate(e.endDate)}</span>
           </div>
           <div style="font-size:0.85rem; color:#475569; font-weight:500;">${escapeXml(e.company)} ${e.location ? `• ${escapeXml(e.location)}` : ''}</div>
           <div style="font-size:0.85rem; color:#334155; margin-top:0.25rem; white-space:pre-line;">${escapeXml(e.description)}</div>
@@ -1564,12 +1601,12 @@
     }
 
     function renderCommonEducation() {
-      if (!resumeData.education || !resumeData.education.length) return '';
+      if (!resumeData.education.length) return '';
       return resumeData.education.map(e => `
         <div style="margin-bottom:0.65rem;">
           <div style="display:flex; justify-content:space-between; font-weight:700;">
             <span>${escapeXml(e.degree)}</span>
-            <span style="color:#64748b; font-size:0.8rem;">${escapeXml(formatDate(e.startDate))}${e.startDate || e.endDate ? ' - ' : ''}${escapeXml(formatDate(e.endDate))}</span>
+            <span style="color:#64748b; font-size:0.8rem;">${formatDate(e.startDate)}${e.startDate || e.endDate ? ' - ' : ''}${formatDate(e.endDate)}</span>
           </div>
           <div style="font-size:0.85rem; color:#475569;">${escapeXml(e.institution)} ${e.location ? `(${escapeXml(e.location)})` : ''} ${e.gpa ? `• GPA: ${escapeXml(e.gpa)}` : ''}</div>
           ${e.description ? `<div style="font-size:0.8rem; color:#64748b;">${escapeXml(e.description)}</div>` : ''}
@@ -1578,19 +1615,19 @@
     }
 
     function renderCommonSkills() {
-      if (!resumeData.skills || !resumeData.skills.length) return '';
+      if (!resumeData.skills.length) return '';
       return `<div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-        ${resumeData.skills.map(s => `<span style="background:#f1f5f9; color:#0f172a; padding:0.25rem 0.6rem; border-radius:4px; font-weight:600; font-size:0.8rem; border:1px solid #e2e8f0;">${escapeXml(s.name)} ${s.level ? `(${escapeXml(s.level)}%)` : ''}</span>`).join('')}
+        ${resumeData.skills.map(s => `<span style="background:#f1f5f9; color:#0f172a; padding:0.25rem 0.6rem; border-radius:4px; font-weight:600; font-size:0.8rem; border:1px solid #e2e8f0;">${escapeXml(s.name)} ${s.level ? `(${s.level}%)` : ''}</span>`).join('')}
       </div>`;
     }
 
     function renderCommonProjects() {
-      if (!resumeData.projects || !resumeData.projects.length) return '';
+      if (!resumeData.projects.length) return '';
       return resumeData.projects.map(p => `
         <div style="margin-bottom:0.75rem;">
           <div style="display:flex; justify-content:space-between; font-weight:700;">
             <span>${escapeXml(p.title)}</span>
-            ${p.link ? `<a href="${escapeAttr(formatWebUrl(p.link))}" target="_blank" rel="noopener noreferrer" class="cv-link">Link ↗</a>` : ''}
+            ${p.link ? `<a class="cv-link" href="${escapeAttr(formatURL(p.link))}" target="_blank" style="color:var(--accent-color); font-size:0.8rem; text-decoration:none;">Link ↗</a>` : ''}
           </div>
           ${p.tech ? `<div style="font-size:0.75rem; color:var(--accent-color); font-weight:600;">${escapeXml(p.tech)}</div>` : ''}
           <div style="font-size:0.85rem; color:#334155;">${escapeXml(p.description)}</div>
@@ -1599,51 +1636,33 @@
     }
 
     function renderCommonLanguages() {
-      if (!resumeData.languages || !resumeData.languages.length) return '';
+      if (!resumeData.languages.length) return '';
       return `<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
         ${resumeData.languages.map(l => `<div style="font-size:0.85rem;"><strong>${escapeXml(l.name)}:</strong> ${escapeXml(l.level)}</div>`).join('')}
       </div>`;
     }
 
     function renderCommonCertifications() {
-      if (!resumeData.certifications || !resumeData.certifications.length) return '';
+      if (!resumeData.certifications.length) return '';
       return resumeData.certifications.map(c => `
         <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.35rem;">
-          <div><strong>${escapeXml(c.title)}</strong> – ${escapeXml(c.issuer)}</div>
-          <span style="color:#64748b; font-size:0.8rem;">${escapeXml(formatDate(c.date))}</span>
+          <div><strong>${escapeXml(c.title)}</strong> – ${escapeXml(c.issuer)} ${c.url ? `<a class="cv-link" href="${escapeAttr(formatURL(c.url))}" target="_blank">↗</a>` : ''}</div>
+          <span style="color:#64748b; font-size:0.8rem;">${formatDate(c.date)}</span>
         </div>
       `).join('');
     }
 
-    function formatWebUrl(url) {
-      if (!url) return '';
-      if (!/^https?:\/\//i.test(url)) {
-        return 'https://' + url;
-      }
-      return url;
-    }
-
     function renderCommonSocials() {
-      if (!resumeData.socials || !resumeData.socials.length) return '';
+      if (!resumeData.socials.length) return '';
       return `<div style="display:flex; flex-wrap:wrap; gap:0.75rem; font-size:0.85rem;">
-        ${resumeData.socials.map(s => {
-          let url = s.url ? formatWebUrl(s.url) : (s.username ? `https://${s.platform.toLowerCase().replace(/\s+/g, '')}.com/${s.username}` : '#');
-          return `<div><strong>${escapeXml(s.platform)}:</strong> <a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer" class="cv-link">${escapeXml(s.username || s.url)}</a></div>`;
-        }).join('')}
+        ${resumeData.socials.map(s => `<div><strong>${escapeXml(s.platform)}:</strong> <a class="cv-link" href="${escapeAttr(formatURL(s.url || s.username))}" target="_blank">${escapeXml(s.username || s.url)}</a></div>`).join('')}
       </div>`;
     }
 
     function renderCommonReferences() {
-      if (!resumeData.references || !resumeData.references.length) return '';
+      if (!resumeData.references.length) return '';
       return `<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
         ${resumeData.references.map(r => `<div style="font-size:0.85rem;"><strong>${escapeXml(r.name)}</strong><br/><span style="color:#475569;">${escapeXml(r.title)}</span><br/><span style="color:#64748b; font-size:0.8rem;">${escapeXml(r.contact)}</span></div>`).join('')}
-      </div>`;
-    }
-
-    function renderCommonHobbies() {
-      if (!resumeData.hobbies || !resumeData.hobbies.length) return '';
-      return `<div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-        ${resumeData.hobbies.map(h => `<span style="background:#f1f5f9; color:#0f172a; padding:0.25rem 0.6rem; border-radius:4px; font-weight:600; font-size:0.8rem; border:1px solid #e2e8f0;">${escapeXml(h.name)}</span>`).join('')}
       </div>`;
     }
 
@@ -1654,7 +1673,7 @@
         const itemsHTML = sec.items.map(i => `
           <div style="margin-bottom:0.6rem;">
             <div style="display:flex; justify-content:space-between; font-weight:700;"><span>${escapeXml(i.title)}</span><span style="color:#64748b; font-size:0.8rem;">${escapeXml(i.date)}</span></div>
-            <div style="font-size:0.85rem; color:#475569; font-weight:500;">${escapeXml(i.subtitle)} ${i.location ? `• ${escapeXml(i.location)}` : ''}</div>
+            <div style="font-size:0.85rem; color:#475569; font-weight:500;">${escapeXml(i.subtitle || '')} ${i.location ? `• ${escapeXml(i.location)}` : ''}</div>
             ${i.description ? `<div style="font-size:0.85rem; color:#334155; margin-top:0.2rem;">${escapeXml(i.description)}</div>` : ''}
           </div>
         `).join('');
@@ -1678,232 +1697,79 @@
       const template = settings.template || 'modern';
       let html = '';
 
-      if (template === 'modern') html = renderModernTemplate(p, paddingVal);
-      else if (template === 'classic') html = renderClassicTemplate(p, paddingVal);
-      else if (template === 'minimal') html = renderMinimalTemplate(p, paddingVal);
-      else if (template === 'creative') html = renderCreativeTemplate(p, paddingVal);
-      else if (template === 'compact') html = renderCompactTemplate(p, paddingVal);
-      else if (template === 'executive') html = renderExecutiveTemplate(p, paddingVal);
-      else if (template === 'serif') html = renderSerifTemplate(p, paddingVal);
-      else if (template === 'timeline') html = renderTimelineTemplate(p, paddingVal);
-      else if (template === 'infographic') html = renderInfographicTemplate(p, paddingVal);
-      else if (template === 'academic') html = renderAcademicTemplate(p, paddingVal);
-      else if (template === 'boldsplit') html = renderBoldSplitTemplate(p, paddingVal);
-      else if (template === 'europe') html = renderEuropeTemplate(p, paddingVal);
-      else if (template === 'minimaldark') html = renderMinimalDarkTemplate(p, paddingVal);
+      // Check if Custom Studio Template
+      const customT = userCustomTemplates.find(t => t.id === template);
+      if (customT) {
+        document.getElementById('custom-template-style-element').innerHTML = customT.css || '';
+        html = renderStudioCustomTemplate(customT, p);
+      } else {
+        document.getElementById('custom-template-style-element').innerHTML = '';
+        if (template === 'modern') html = renderModernTemplate(p, paddingVal);
+        else if (template === 'classic') html = renderClassicTemplate(p, paddingVal);
+        else if (template === 'minimal') html = renderMinimalTemplate(p, paddingVal);
+        else if (template === 'creative') html = renderCreativeTemplate(p, paddingVal);
+        else if (template === 'compact') html = renderCompactTemplate(p, paddingVal);
+        else if (template === 'executive') html = renderExecutiveTemplate(p, paddingVal);
+        else if (template === 'serif') html = renderSerifTemplate(p, paddingVal);
+        else if (template === 'timeline') html = renderTimelineTemplate(p, paddingVal);
+        else if (template === 'europass') html = renderEuropassTemplate(p, paddingVal);
+        else if (template === 'sleekdark') html = renderSleekDarkTemplate(p, paddingVal);
+        else if (template === 'boldmodern') html = renderBoldModernTemplate(p, paddingVal);
+        else if (template === 'infographic') html = renderInfographicTemplate(p, paddingVal);
+        else if (template === 'minimalgrid') html = renderMinimalGridTemplate(p, paddingVal);
+      }
 
       container.innerHTML = html;
     }
 
-    function renderEuropeTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Professional Title';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-      const website = escapeXml(p.website);
-
-      return `
-        <div style="padding:${padding}; background:#ffffff; border-left:10px solid var(--accent-color);">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #e2e8f0; padding-bottom:1.25rem; margin-bottom:1.5rem;">
-            <div>
-              <div style="font-size:2.2rem; font-weight:700; color:#0f172a;">${name}</div>
-              <div style="font-size:1.05rem; color:var(--accent-color); font-weight:600;">${title}</div>
-            </div>
-            <div style="text-align:right; font-size:0.85rem; color:#475569;">
-              ${email ? `<div><i class="fa-solid fa-envelope"></i> <a href="mailto:${email}" class="cv-link">${email}</a></div>` : ''}
-              ${phone ? `<div><i class="fa-solid fa-phone"></i> <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" class="cv-link">${phone}</a></div>` : ''}
-              ${location ? `<div><i class="fa-solid fa-location-dot"></i> ${location}</div>` : ''}
-              ${website ? `<div><i class="fa-solid fa-globe"></i> <a href="${escapeAttr(formatWebUrl(website))}" target="_blank" class="cv-link">${website}</a></div>` : ''}
-            </div>
-          </div>
-          ${resumeData.summary ? getSectionHTML('Personal Statement', `<p style="color:#334155;">${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-          ${getSectionHTML('Work Experience', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education and Training', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Personal Skills', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Social Links', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
-          ${renderCommonCustom()}
-        </div>
-      `;
-    }
-
-    function renderMinimalDarkTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Profession';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-
-      return `
-        <div style="padding:${padding}; background:#0f172a; color:#f8fafc; min-height:297mm;">
-          <div style="border-bottom:2px solid #334155; padding-bottom:1.5rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div style="font-size:2.2rem; font-weight:800; color:#38bdf8;">${name}</div>
-              <div style="font-size:1.1rem; color:#cbd5e1; font-weight:600;">${title}</div>
-            </div>
-            <div style="text-align:right; font-size:0.85rem; color:#94a3b8;">
-              ${email ? `<div><a href="mailto:${email}" style="color:#38bdf8;">${email}</a></div>` : ''}
-              ${phone ? `<div><a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" style="color:#38bdf8;">${phone}</a></div>` : ''}
-              ${location ? `<div>${location}</div>` : ''}
-            </div>
-          </div>
-          ${resumeData.summary ? getSectionHTML('About Me', `<p style="color:#e2e8f0;">${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-          ${getSectionHTML('Experience', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Skills', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Social Links', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
-          ${renderCommonCustom()}
-        </div>
-      `;
+    function renderStudioCustomTemplate(t, p) {
+      let tHTML = t.html || '';
+      tHTML = tHTML.replace(/\{\{NAME\}\}/g, escapeXml(p.fullName || 'Your Name'));
+      tHTML = tHTML.replace(/\{\{TITLE\}\}/g, escapeXml(p.jobTitle || 'Profession'));
+      tHTML = tHTML.replace(/\{\{EMAIL\}\}/g, escapeXml(p.email || ''));
+      tHTML = tHTML.replace(/\{\{PHONE\}\}/g, escapeXml(p.phone || ''));
+      tHTML = tHTML.replace(/\{\{LOCATION\}\}/g, escapeXml(p.location || ''));
+      tHTML = tHTML.replace(/\{\{WEBSITE\}\}/g, escapeXml(p.website || ''));
+      tHTML = tHTML.replace(/\{\{PHOTO\}\}/g, p.photo ? `<img src="${escapeAttr(p.photo)}" class="profile-img" alt="Photo"/>` : '');
+      tHTML = tHTML.replace(/\{\{SUMMARY\}\}/g, resumeData.summary ? `<p>${escapeXml(resumeData.summary)}</p>` : '');
+      tHTML = tHTML.replace(/\{\{EXPERIENCE\}\}/g, renderCommonExperience());
+      tHTML = tHTML.replace(/\{\{EDUCATION\}\}/g, renderCommonEducation());
+      tHTML = tHTML.replace(/\{\{SKILLS\}\}/g, renderCommonSkills());
+      tHTML = tHTML.replace(/\{\{PROJECTS\}\}/g, renderCommonProjects());
+      tHTML = tHTML.replace(/\{\{LANGUAGES\}\}/g, renderCommonLanguages());
+      tHTML = tHTML.replace(/\{\{CERTIFICATIONS\}\}/g, renderCommonCertifications());
+      tHTML = tHTML.replace(/\{\{SOCIALS\}\}/g, renderCommonSocials());
+      tHTML = tHTML.replace(/\{\{REFERENCES\}\}/g, renderCommonReferences());
+      tHTML = tHTML.replace(/\{\{CUSTOM\}\}/g, renderCommonCustom());
+      return tHTML;
     }
 
     function renderModernTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Profession';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-      const website = escapeXml(p.website);
-      const photo = escapeAttr(p.photo);
-
       return `
         <div class="template-modern">
           <div class="sidebar">
-            ${photo ? `<img src="${photo}" class="profile-img" alt="Profile"/>` : ''}
-            <div style="font-size:1.4rem; font-weight:700; text-align:center;">${name}</div>
-            <div style="font-size:0.85rem; text-align:center; opacity:0.8; margin-bottom:1.5rem;">${title}</div>
+            ${p.photo ? `<img src="${escapeAttr(p.photo)}" class="profile-img" alt="Profile"/>` : ''}
+            <div style="font-size:1.4rem; font-weight:700; text-align:center;">${escapeXml(p.fullName || 'Your Name')}</div>
+            <div style="font-size:0.85rem; text-align:center; opacity:0.8; margin-bottom:1.5rem;">${escapeXml(p.jobTitle || 'Profession')}</div>
             <div style="font-size:0.8rem; margin-bottom:1.25rem;">
-              ${email ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-envelope"></i> <a href="mailto:${email}" style="color:#fff; text-decoration:underline;">${email}</a></div>` : ''}
-              ${phone ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-phone"></i> <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" style="color:#fff; text-decoration:underline;">${phone}</a></div>` : ''}
-              ${location ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-location-dot"></i> ${location}</div>` : ''}
-              ${website ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-globe"></i> <a href="${escapeAttr(formatWebUrl(website))}" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration:underline;">${website}</a></div>` : ''}
+              ${p.email ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-envelope"></i> <a href="${escapeAttr(formatMailto(p.email))}" style="color:#fff;">${escapeXml(p.email)}</a></div>` : ''}
+              ${p.phone ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-phone"></i> <a href="${escapeAttr(formatTel(p.phone))}" style="color:#fff;">${escapeXml(p.phone)}</a></div>` : ''}
+              ${p.location ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-location-dot"></i> ${escapeXml(p.location)}</div>` : ''}
+              ${p.website ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-globe"></i> <a href="${escapeAttr(formatURL(p.website))}" target="_blank" style="color:#fff;">${escapeXml(p.website)}</a></div>` : ''}
             </div>
 
-            ${(resumeData.socials && resumeData.socials.length) ? `<div style="margin-bottom:1.25rem;"><div style="font-weight:700; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; margin-bottom:0.5rem;">Links</div>${resumeData.socials.map(s => `<div><a href="${escapeAttr(s.url ? formatWebUrl(s.url) : '#')}" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:0.8rem;">${escapeXml(s.platform)}: ${escapeXml(s.username || s.url)}</a></div>`).join('')}</div>` : ''}
-            ${(resumeData.skills && resumeData.skills.length) ? `<div style="margin-bottom:1.25rem;"><div style="font-weight:700; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; margin-bottom:0.5rem;">Skills</div>${resumeData.skills.map(s => `<div style="font-size:0.8rem; margin-bottom:0.25rem;">${escapeXml(s.name)} ${s.level ? `(${escapeXml(s.level)}%)` : ''}</div>`).join('')}</div>` : ''}
-            ${(resumeData.languages && resumeData.languages.length) ? `<div style="margin-bottom:1.25rem;"><div style="font-weight:700; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; margin-bottom:0.5rem;">Languages</div>${resumeData.languages.map(l => `<div style="font-size:0.8rem; margin-bottom:0.25rem;">${escapeXml(l.name)} (${escapeXml(l.level)})</div>`).join('')}</div>` : ''}
-            ${(resumeData.hobbies && resumeData.hobbies.length) ? `<div><div style="font-weight:700; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; margin-bottom:0.5rem;">Hobbies</div><div style="display:flex; flex-wrap:wrap; gap:0.25rem;">${resumeData.hobbies.map(h => `<span style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:10px; font-size:0.75rem;">${escapeXml(h.name)}</span>`).join('')}</div></div>` : ''}
+            ${resumeData.skills.length ? `<div style="margin-bottom:1.25rem;"><div style="font-weight:700; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; margin-bottom:0.5rem;">Skills</div>${resumeData.skills.map(s => `<div style="font-size:0.8rem; margin-bottom:0.25rem;">${escapeXml(s.name)} (${s.level}%)</div>`).join('')}</div>` : ''}
+            ${resumeData.languages.length ? `<div style="margin-bottom:1.25rem;"><div style="font-weight:700; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; margin-bottom:0.5rem;">Languages</div>${resumeData.languages.map(l => `<div style="font-size:0.8rem; margin-bottom:0.25rem;">${escapeXml(l.name)} (${escapeXml(l.level)})</div>`).join('')}</div>` : ''}
+            ${resumeData.hobbies.length ? `<div><div style="font-weight:700; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; margin-bottom:0.5rem;">Hobbies</div><div style="display:flex; flex-wrap:wrap; gap:0.25rem;">${resumeData.hobbies.map(h => `<span style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:10px; font-size:0.75rem;">${escapeXml(h.name)}</span>`).join('')}</div></div>` : ''}
           </div>
           <div class="main-content">
-            ${resumeData.summary ? getSectionHTML('Profile Summary', `<p style="margin:0; color:#334155;">${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-            ${getSectionHTML('Work Experience', renderCommonExperience(), 'experience')}
-            ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-            ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-            ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-            ${getSectionHTML('References', renderCommonReferences(), 'references')}
-            ${renderCommonCustom()}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderInfographicTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Profession';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-
-      return `
-        <div class="template-infographic" style="padding:${padding};">
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; padding:1.25rem; border-radius:8px; border-left:6px solid var(--accent-color); box-shadow:0 2px 8px rgba(0,0,0,0.05); margin-bottom:1.5rem;">
-            <div>
-              <div style="font-size:1.8rem; font-weight:800; color:#0f172a;">${name}</div>
-              <div style="color:var(--accent-color); font-weight:700;">${title}</div>
-            </div>
-            <div style="text-align:right; font-size:0.8rem; color:#64748b;">
-              ${email ? `<div><i class="fa-solid fa-envelope"></i> <a href="mailto:${email}" class="cv-link">${email}</a></div>` : ''}
-              ${phone ? `<div><i class="fa-solid fa-phone"></i> <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" class="cv-link">${phone}</a></div>` : ''}
-              ${location ? `<div><i class="fa-solid fa-location-dot"></i> ${location}</div>` : ''}
-            </div>
-          </div>
-          ${resumeData.summary ? getSectionHTML('Overview', `<p>${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-          ${getSectionHTML('Experience', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Key Skills', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Links', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
-          ${renderCommonCustom()}
-        </div>
-      `;
-    }
-
-    function renderAcademicTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Curriculum Vitae';
-      const title = escapeXml(p.jobTitle) || 'Academic Resume';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-      const website = escapeXml(p.website);
-
-      return `
-        <div class="template-academic" style="padding:${padding};">
-          <div class="acad-header">
-            <div style="font-size:2.2rem; font-weight:700;">${name}</div>
-            <div style="font-size:1.1rem; font-style:italic; margin-top:0.25rem;">${title}</div>
-            <div style="font-size:0.85rem; margin-top:0.5rem; color:#333;">${email ? `<a href="mailto:${email}" style="color:#111;">${email}</a>` : ''} ${phone ? `• <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" style="color:#111;">${phone}</a>` : ''} ${location ? `• ${location}` : ''} ${website ? `• <a href="${escapeAttr(formatWebUrl(website))}" target="_blank" style="color:#111;">${website}</a>` : ''}</div>
-          </div>
-          ${resumeData.summary ? getSectionHTML('Research & Academic Profile', `<p style="text-align:justify; font-size:0.95rem;">${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-          ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Academic Experience', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Publications & Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications & Honors', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Skills & Methodology', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Academic References', renderCommonReferences(), 'references')}
-          ${renderCommonCustom()}
-        </div>
-      `;
-    }
-
-    function renderBoldSplitTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Title';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-      const website = escapeXml(p.website);
-      const photo = escapeAttr(p.photo);
-
-      return `
-        <div class="template-bold-split">
-          <div class="left-col">
-            ${photo ? `<img src="${photo}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; display:block; margin:0 auto 1.25rem auto; border:3px solid #38bdf8;" alt="Profile"/>` : ''}
-            <div style="font-size:1.6rem; font-weight:800; text-align:center; color:#ffffff;">${name}</div>
-            <div style="font-size:0.85rem; text-align:center; color:#38bdf8; font-weight:600; margin-bottom:1.5rem;">${title}</div>
-            <div style="font-size:0.8rem; line-height:1.6; margin-bottom:1.5rem;">
-              ${email ? `<div><i class="fa-solid fa-envelope" style="color:#38bdf8;"></i> <a href="mailto:${email}">${email}</a></div>` : ''}
-              ${phone ? `<div><i class="fa-solid fa-phone" style="color:#38bdf8;"></i> <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}">${phone}</a></div>` : ''}
-              ${location ? `<div><i class="fa-solid fa-location-dot" style="color:#38bdf8;"></i> ${location}</div>` : ''}
-              ${website ? `<div><i class="fa-solid fa-globe" style="color:#38bdf8;"></i> <a href="${escapeAttr(formatWebUrl(website))}" target="_blank">${website}</a></div>` : ''}
-            </div>
-            ${(resumeData.skills && resumeData.skills.length) ? `<div style="margin-bottom:1.25rem;"><div style="font-weight:700; color:#38bdf8; text-transform:uppercase; border-bottom:1px solid #334155; padding-bottom:3px; margin-bottom:0.5rem;">Skills</div>${resumeData.skills.map(s => `<div style="font-size:0.8rem; margin-bottom:0.25rem;">${escapeXml(s.name)} ${s.level ? `(${escapeXml(s.level)}%)` : ''}</div>`).join('')}</div>` : ''}
-            ${(resumeData.languages && resumeData.languages.length) ? `<div style="margin-bottom:1.25rem;"><div style="font-weight:700; color:#38bdf8; text-transform:uppercase; border-bottom:1px solid #334155; padding-bottom:3px; margin-bottom:0.5rem;">Languages</div>${resumeData.languages.map(l => `<div style="font-size:0.8rem; margin-bottom:0.25rem;">${escapeXml(l.name)} (${escapeXml(l.level)})</div>`).join('')}</div>` : ''}
-            ${(resumeData.socials && resumeData.socials.length) ? `<div><div style="font-weight:700; color:#38bdf8; text-transform:uppercase; border-bottom:1px solid #334155; padding-bottom:3px; margin-bottom:0.5rem;">Links</div>${resumeData.socials.map(s => `<div style="font-size:0.8rem;"><a href="${escapeAttr(s.url ? formatWebUrl(s.url) : '#')}" target="_blank">${escapeXml(s.platform)}: ${escapeXml(s.username || s.url)}</a></div>`).join('')}</div>` : ''}
-          </div>
-          <div class="right-col">
-            ${resumeData.summary ? getSectionHTML('Professional Profile', `<p>${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-            ${getSectionHTML('Work Experience', renderCommonExperience(), 'experience')}
-            ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-            ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-            ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-            ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-            ${getSectionHTML('References', renderCommonReferences(), 'references')}
+            ${resumeData.summary ? getSectionHTML('Profile Summary', `<p style="margin:0; color:#334155;">${escapeXml(resumeData.summary)}</p>`) : ''}
+            ${getSectionHTML('Work Experience', renderCommonExperience())}
+            ${getSectionHTML('Education', renderCommonEducation())}
+            ${getSectionHTML('Projects', renderCommonProjects())}
+            ${getSectionHTML('Certifications', renderCommonCertifications())}
+            ${getSectionHTML('Links & Socials', renderCommonSocials())}
+            ${getSectionHTML('References', renderCommonReferences())}
             ${renderCommonCustom()}
           </div>
         </div>
@@ -1911,92 +1777,65 @@
     }
 
     function renderClassicTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'YOUR NAME';
-      const title = escapeXml(p.jobTitle) || 'PROFESSIONAL TITLE';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-      const website = escapeXml(p.website);
-
       return `
         <div class="template-classic" style="padding:${padding};">
           <div class="header-classic">
-            <div class="name-classic">${name}</div>
-            <div style="font-size:1.1rem; font-weight:600; color:#475569;">${title}</div>
-            <div style="margin-top:0.5rem; font-size:0.85rem; color:#64748b;">${email ? `<a href="mailto:${email}" class="cv-link">${email}</a>` : ''} ${phone ? `• <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" class="cv-link">${phone}</a>` : ''} ${location ? `• ${location}` : ''} ${website ? `• <a href="${escapeAttr(formatWebUrl(website))}" target="_blank" class="cv-link">${website}</a>` : ''}</div>
+            <div class="name-classic">${escapeXml(p.fullName || 'YOUR NAME')}</div>
+            <div style="font-size:1.1rem; font-weight:600; color:#475569;">${escapeXml(p.jobTitle || 'PROFESSIONAL TITLE')}</div>
+            <div style="margin-top:0.5rem; font-size:0.85rem; color:#64748b;">${escapeXml(p.email || '')} • ${escapeXml(p.phone || '')} • ${escapeXml(p.location || '')} • ${escapeXml(p.website || '')}</div>
           </div>
-          ${resumeData.summary ? getSectionHTML('Executive Summary', `<p>${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-          ${getSectionHTML('Work Experience', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Skills & Competencies', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Links & Profiles', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
+          ${resumeData.summary ? getSectionHTML('Executive Summary', `<p>${escapeXml(resumeData.summary)}</p>`) : ''}
+          ${getSectionHTML('Work Experience', renderCommonExperience())}
+          ${getSectionHTML('Education', renderCommonEducation())}
+          ${getSectionHTML('Skills & Competencies', renderCommonSkills())}
+          ${getSectionHTML('Projects', renderCommonProjects())}
+          ${getSectionHTML('Languages', renderCommonLanguages())}
+          ${getSectionHTML('Certifications', renderCommonCertifications())}
+          ${getSectionHTML('Links & Profiles', renderCommonSocials())}
+          ${getSectionHTML('References', renderCommonReferences())}
           ${renderCommonCustom()}
         </div>
       `;
     }
 
     function renderMinimalTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Your Title';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-
       return `
         <div class="template-minimal" style="padding:${padding};">
           <div class="header-minimal">
-            <div><div style="font-size:2rem; font-weight:700;">${name}</div><div style="color:var(--accent-color); font-weight:600;">${title}</div></div>
-            <div style="text-align:right; font-size:0.85rem; color:#64748b;">${email ? `<a href="mailto:${email}" class="cv-link">${email}</a><br/>` : ''}${phone ? `<a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" class="cv-link">${phone}</a><br/>` : ''}${location || ''}</div>
+            <div><div style="font-size:2rem; font-weight:700;">${escapeXml(p.fullName || 'Your Name')}</div><div style="color:var(--accent-color); font-weight:600;">${escapeXml(p.jobTitle || 'Your Title')}</div></div>
+            <div style="text-align:right; font-size:0.85rem; color:#64748b;">${escapeXml(p.email || '')}<br/>${escapeXml(p.phone || '')}<br/>${escapeXml(p.location || '')}</div>
           </div>
-          ${(resumeData.summary && (!resumeData.hiddenSections || !resumeData.hiddenSections.summary)) ? `<p style="margin-bottom:1.5rem; color:#334155;">${escapeXml(resumeData.summary)}</p>` : ''}
-          ${getSectionHTML('Experience', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Skills', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Social Links', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
+          ${resumeData.summary ? `<p style="margin-bottom:1.5rem; color:#334155;">${escapeXml(resumeData.summary)}</p>` : ''}
+          ${getSectionHTML('Experience', renderCommonExperience())}
+          ${getSectionHTML('Education', renderCommonEducation())}
+          ${getSectionHTML('Skills', renderCommonSkills())}
+          ${getSectionHTML('Projects', renderCommonProjects())}
+          ${getSectionHTML('Certifications', renderCommonCertifications())}
+          ${getSectionHTML('Social Links', renderCommonSocials())}
           ${renderCommonCustom()}
         </div>
       `;
     }
 
     function renderCreativeTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Job Title';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-      const photo = escapeAttr(p.photo);
-
       return `
         <div class="template-creative">
           <div class="banner">
-            ${photo ? `<img src="${photo}" class="banner-img" alt="Profile"/>` : ''}
+            ${p.photo ? `<img src="${escapeAttr(p.photo)}" class="banner-img" alt="Profile"/>` : ''}
             <div>
-              <h1 style="margin:0; font-size:2rem;">${name}</h1>
-              <div style="font-size:1rem; opacity:0.9;">${title}</div>
-              <div style="font-size:0.85rem; margin-top:0.35rem; opacity:0.85;">${email ? `<a href="mailto:${email}" style="color:#fff; text-decoration:underline;">${email}</a>` : ''} ${phone ? `| <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" style="color:#fff; text-decoration:underline;">${phone}</a>` : ''} ${location ? `| ${location}` : ''}</div>
+              <h1 style="margin:0; font-size:2rem;">${escapeXml(p.fullName || 'Your Name')}</h1>
+              <div style="font-size:1rem; opacity:0.9;">${escapeXml(p.jobTitle || 'Job Title')}</div>
+              <div style="font-size:0.85rem; margin-top:0.35rem; opacity:0.85;">${escapeXml(p.email || '')} | ${escapeXml(p.phone || '')} | ${escapeXml(p.location || '')}</div>
             </div>
           </div>
           <div style="padding:${padding};">
-            ${resumeData.summary ? getSectionHTML('Profile Summary', `<p>${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-            ${getSectionHTML('Experience', renderCommonExperience(), 'experience')}
-            ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-            ${getSectionHTML('Skills', renderCommonSkills(), 'skills')}
-            ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-            ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-            ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-            ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-            ${getSectionHTML('Links', renderCommonSocials(), 'socials')}
-            ${getSectionHTML('References', renderCommonReferences(), 'references')}
+            ${resumeData.summary ? getSectionHTML('Profile Summary', `<p>${escapeXml(resumeData.summary)}</p>`) : ''}
+            ${getSectionHTML('Experience', renderCommonExperience())}
+            ${getSectionHTML('Education', renderCommonEducation())}
+            ${getSectionHTML('Skills', renderCommonSkills())}
+            ${getSectionHTML('Projects', renderCommonProjects())}
+            ${getSectionHTML('Certifications', renderCommonCertifications())}
+            ${getSectionHTML('Links', renderCommonSocials())}
             ${renderCommonCustom()}
           </div>
         </div>
@@ -2004,125 +1843,206 @@
     }
 
     function renderCompactTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Profession';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-
       return `
         <div class="template-compact" style="padding:${padding};">
           <div style="background:#f1f5f9; padding:1rem; border-left:4px solid var(--accent-color); margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <div style="font-size:1.4rem; font-weight:700;">${name}</div>
-              <div style="color:var(--accent-color); font-weight:600;">${title}</div>
+              <div style="font-size:1.4rem; font-weight:700;">${escapeXml(p.fullName || 'Your Name')}</div>
+              <div style="color:var(--accent-color); font-weight:600;">${escapeXml(p.jobTitle || 'Profession')}</div>
             </div>
-            <div style="text-align:right; font-size:0.8rem; color:#475569;">${email ? `<a href="mailto:${email}" class="cv-link">${email}</a><br/>` : ''}${phone ? `<a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" class="cv-link">${phone}</a>` : ''}</div>
+            <div style="text-align:right; font-size:0.8rem; color:#475569;">${escapeXml(p.email || '')}<br/>${escapeXml(p.phone || '')}</div>
           </div>
-          ${(resumeData.summary && (!resumeData.hiddenSections || !resumeData.hiddenSections.summary)) ? `<p style="margin-bottom:1rem;">${escapeXml(resumeData.summary)}</p>` : ''}
-          ${getSectionHTML('Experience', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Skills', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Links', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
+          ${resumeData.summary ? `<p style="margin-bottom:1rem;">${escapeXml(resumeData.summary)}</p>` : ''}
+          ${getSectionHTML('Experience', renderCommonExperience())}
+          ${getSectionHTML('Education', renderCommonEducation())}
+          ${getSectionHTML('Skills', renderCommonSkills())}
+          ${getSectionHTML('Projects', renderCommonProjects())}
+          ${getSectionHTML('Certifications', renderCommonCertifications())}
+          ${getSectionHTML('Links', renderCommonSocials())}
           ${renderCommonCustom()}
         </div>
       `;
     }
 
     function renderExecutiveTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'YOUR NAME';
-      const title = escapeXml(p.jobTitle) || 'EXECUTIVE LEADER';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-
       return `
         <div class="template-executive" style="padding:${padding};">
           <div class="exec-header">
             <div>
-              <div style="font-size:2.2rem; font-weight:800; color:#0f172a; letter-spacing:-0.02em;">${name}</div>
-              <div style="font-size:1.1rem; color:var(--accent-color); font-weight:700; text-transform:uppercase;">${title}</div>
+              <div style="font-size:2.2rem; font-weight:800; color:#0f172a; letter-spacing:-0.02em;">${escapeXml(p.fullName || 'YOUR NAME')}</div>
+              <div style="font-size:1.1rem; color:var(--accent-color); font-weight:700; text-transform:uppercase;">${escapeXml(p.jobTitle || 'EXECUTIVE LEADER')}</div>
             </div>
             <div style="text-align:right; font-size:0.85rem; color:#475569;">
-              ${email ? `<div><i class="fa-solid fa-envelope"></i> <a href="mailto:${email}" class="cv-link">${email}</a></div>` : ''}
-              ${phone ? `<div><i class="fa-solid fa-phone"></i> <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" class="cv-link">${phone}</a></div>` : ''}
-              ${location ? `<div><i class="fa-solid fa-location-dot"></i> ${location}</div>` : ''}
+              ${p.email ? `<div><i class="fa-solid fa-envelope"></i> ${escapeXml(p.email)}</div>` : ''}
+              ${p.phone ? `<div><i class="fa-solid fa-phone"></i> ${escapeXml(p.phone)}</div>` : ''}
+              ${p.location ? `<div><i class="fa-solid fa-location-dot"></i> ${escapeXml(p.location)}</div>` : ''}
             </div>
           </div>
-          ${resumeData.summary ? getSectionHTML('Executive Overview', `<p style="color:#334155;">${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-          ${getSectionHTML('Leadership Experience', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Core Competencies', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Key Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Links & Portfolios', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
+          ${resumeData.summary ? getSectionHTML('Executive Overview', `<p style="color:#334155;">${escapeXml(resumeData.summary)}</p>`) : ''}
+          ${getSectionHTML('Leadership Experience', renderCommonExperience())}
+          ${getSectionHTML('Education', renderCommonEducation())}
+          ${getSectionHTML('Core Competencies', renderCommonSkills())}
+          ${getSectionHTML('Key Projects', renderCommonProjects())}
+          ${getSectionHTML('Certifications', renderCommonCertifications())}
+          ${getSectionHTML('Links & Portfolios', renderCommonSocials())}
           ${renderCommonCustom()}
         </div>
       `;
     }
 
     function renderSerifTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Professional Resume';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const location = escapeXml(p.location);
-
       return `
         <div class="template-serif" style="padding:${padding};">
           <div class="serif-header">
-            <div class="serif-title">${name}</div>
-            <div style="font-size:1rem; font-style:italic; color:#475569;">${title}</div>
-            <div style="font-size:0.85rem; color:#64748b; margin-top:0.5rem;">${email ? `<a href="mailto:${email}" class="cv-link">${email}</a>` : ''} ${phone ? `• <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" class="cv-link">${phone}</a>` : ''} ${location ? `• ${location}` : ''}</div>
+            <div class="serif-title">${escapeXml(p.fullName || 'Your Name')}</div>
+            <div style="font-size:1rem; font-style:italic; color:#475569;">${escapeXml(p.jobTitle || 'Professional Resume')}</div>
+            <div style="font-size:0.85rem; color:#64748b; margin-top:0.5rem;">${escapeXml(p.email || '')} • ${escapeXml(p.phone || '')} • ${escapeXml(p.location || '')}</div>
           </div>
           <hr style="border:none; border-top:1px solid #cbd5e1; margin-bottom:1.5rem;"/>
-          ${resumeData.summary ? getSectionHTML('Biography', `<p style="text-align:justify;">${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-          ${getSectionHTML('Experience History', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Areas of Expertise', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Social Links', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
+          ${resumeData.summary ? getSectionHTML('Biography', `<p style="text-align:justify;">${escapeXml(resumeData.summary)}</p>`) : ''}
+          ${getSectionHTML('Experience History', renderCommonExperience())}
+          ${getSectionHTML('Education', renderCommonEducation())}
+          ${getSectionHTML('Areas of Expertise', renderCommonSkills())}
+          ${getSectionHTML('Projects', renderCommonProjects())}
+          ${getSectionHTML('Certifications', renderCommonCertifications())}
+          ${getSectionHTML('Social Links', renderCommonSocials())}
           ${renderCommonCustom()}
         </div>
       `;
     }
 
     function renderTimelineTemplate(p, padding) {
-      const name = escapeXml(p.fullName) || 'Your Name';
-      const title = escapeXml(p.jobTitle) || 'Career Journey';
-      const email = escapeXml(p.email);
-      const phone = escapeXml(p.phone);
-      const website = escapeXml(p.website);
-
       return `
         <div class="template-timeline" style="padding:${padding};">
           <div style="border-bottom:2px dashed var(--accent-color); padding-bottom:1rem; margin-bottom:1.5rem;">
-            <div style="font-size:2rem; font-weight:800; color:#0f172a;">${name}</div>
-            <div style="font-size:1rem; font-weight:600; color:var(--accent-color);">${title}</div>
-            <div style="font-size:0.85rem; color:#64748b; margin-top:0.35rem;">${email ? `<a href="mailto:${email}" class="cv-link">${email}</a>` : ''} ${phone ? `| <a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ''))}" class="cv-link">${phone}</a>` : ''} ${website ? `| <a href="${escapeAttr(formatWebUrl(website))}" target="_blank" class="cv-link">${website}</a>` : ''}</div>
+            <div style="font-size:2rem; font-weight:800; color:#0f172a;">${escapeXml(p.fullName || 'Your Name')}</div>
+            <div style="font-size:1rem; font-weight:600; color:var(--accent-color);">${escapeXml(p.jobTitle || 'Career Journey')}</div>
+            <div style="font-size:0.85rem; color:#64748b; margin-top:0.35rem;">${escapeXml(p.email || '')} | ${escapeXml(p.phone || '')} | ${escapeXml(p.website || '')}</div>
           </div>
-          ${resumeData.summary ? getSectionHTML('Career Summary', `<p>${escapeXml(resumeData.summary)}</p>`, 'summary') : ''}
-          ${getSectionHTML('Career Timeline', renderCommonExperience(), 'experience')}
-          ${getSectionHTML('Education Timeline', renderCommonEducation(), 'education')}
-          ${getSectionHTML('Technical Skills', renderCommonSkills(), 'skills')}
-          ${getSectionHTML('Featured Projects', renderCommonProjects(), 'projects')}
-          ${getSectionHTML('Certifications', renderCommonCertifications(), 'certifications')}
-          ${getSectionHTML('Languages', renderCommonLanguages(), 'languages')}
-          ${getSectionHTML('Hobbies & Interests', renderCommonHobbies(), 'hobbies')}
-          ${getSectionHTML('Social Links', renderCommonSocials(), 'socials')}
-          ${getSectionHTML('References', renderCommonReferences(), 'references')}
+          ${resumeData.summary ? getSectionHTML('Career Summary', `<p>${escapeXml(resumeData.summary)}</p>`) : ''}
+          ${getSectionHTML('Career Timeline', renderCommonExperience())}
+          ${getSectionHTML('Education Timeline', renderCommonEducation())}
+          ${getSectionHTML('Technical Skills', renderCommonSkills())}
+          ${getSectionHTML('Featured Projects', renderCommonProjects())}
+          ${getSectionHTML('Certifications', renderCommonCertifications())}
+          ${getSectionHTML('Social Links', renderCommonSocials())}
           ${renderCommonCustom()}
+        </div>
+      `;
+    }
+
+    function renderEuropassTemplate(p, padding) {
+      return `
+        <div class="template-europass">
+          <div class="europass-header">
+            ${p.photo ? `<img src="${escapeAttr(p.photo)}" style="width:100px; height:120px; object-fit:cover; border-radius:4px; border:2px solid var(--accent-color);" alt="Profile"/>` : ''}
+            <div>
+              <div style="font-size:1.8rem; font-weight:800; color:#0f172a;">${escapeXml(p.fullName || 'Europass CV')}</div>
+              <div style="font-size:1rem; color:var(--accent-color); font-weight:600;">${escapeXml(p.jobTitle || 'Job Position')}</div>
+              <div style="font-size:0.85rem; color:#475569; margin-top:0.5rem;">${escapeXml(p.email || '')} | ${escapeXml(p.phone || '')} | ${escapeXml(p.location || '')}</div>
+            </div>
+          </div>
+          ${resumeData.summary ? getSectionHTML('Personal Statement', `<p>${escapeXml(resumeData.summary)}</p>`) : ''}
+          ${getSectionHTML('Work Experience', renderCommonExperience())}
+          ${getSectionHTML('Education & Training', renderCommonEducation())}
+          ${getSectionHTML('Personal Skills & Competencies', renderCommonSkills())}
+          ${getSectionHTML('Language Skills', renderCommonLanguages())}
+          ${getSectionHTML('Projects', renderCommonProjects())}
+          ${renderCommonCustom()}
+        </div>
+      `;
+    }
+
+    function renderSleekDarkTemplate(p, padding) {
+      return `
+        <div class="template-sleek-dark">
+          <div style="border-bottom:1px solid #334155; padding-bottom:1.5rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:2.2rem; font-weight:800; color:#ffffff;">${escapeXml(p.fullName || 'Your Name')}</div>
+              <div style="font-size:1.1rem; color:var(--accent-color, #38bdf8); font-weight:600;">${escapeXml(p.jobTitle || 'Developer / Designer')}</div>
+            </div>
+            <div style="text-align:right; font-size:0.85rem; color:#94a3b8;">${escapeXml(p.email || '')}<br/>${escapeXml(p.phone || '')}<br/>${escapeXml(p.location || '')}</div>
+          </div>
+          ${resumeData.summary ? getSectionHTML('About Me', `<p style="color:#cbd5e1;">${escapeXml(resumeData.summary)}</p>`) : ''}
+          ${getSectionHTML('Experience', renderCommonExperience())}
+          ${getSectionHTML('Education', renderCommonEducation())}
+          ${getSectionHTML('Tech Stack & Skills', renderCommonSkills())}
+          ${getSectionHTML('Projects', renderCommonProjects())}
+          ${getSectionHTML('Certifications', renderCommonCertifications())}
+          ${renderCommonCustom()}
+        </div>
+      `;
+    }
+
+    function renderBoldModernTemplate(p, padding) {
+      return `
+        <div class="template-modern">
+          <div class="sidebar" style="background:#0f172a; border-right:4px solid var(--accent-color);">
+            ${p.photo ? `<img src="${escapeAttr(p.photo)}" class="profile-img" alt="Profile"/>` : ''}
+            <div style="font-size:1.4rem; font-weight:800; text-align:center;">${escapeXml(p.fullName || 'Your Name')}</div>
+            <div style="font-size:0.85rem; text-align:center; color:var(--accent-color); font-weight:600; margin-bottom:1.5rem;">${escapeXml(p.jobTitle || 'Profession')}</div>
+            <div style="font-size:0.8rem; margin-bottom:1.25rem;">
+              ${p.email ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-envelope"></i> ${escapeXml(p.email)}</div>` : ''}
+              ${p.phone ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-phone"></i> ${escapeXml(p.phone)}</div>` : ''}
+              ${p.location ? `<div style="margin-bottom:0.35rem;"><i class="fa-solid fa-location-dot"></i> ${escapeXml(p.location)}</div>` : ''}
+            </div>
+            ${resumeData.skills.length ? `<div style="margin-bottom:1.25rem;"><div style="font-weight:700; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px; margin-bottom:0.5rem;">Skills</div>${resumeData.skills.map(s => `<div style="font-size:0.8rem; margin-bottom:0.25rem;">${escapeXml(s.name)} (${s.level}%)</div>`).join('')}</div>` : ''}
+          </div>
+          <div class="main-content">
+            ${resumeData.summary ? getSectionHTML('Professional Profile', `<p>${escapeXml(resumeData.summary)}</p>`) : ''}
+            ${getSectionHTML('Work Experience', renderCommonExperience())}
+            ${getSectionHTML('Education', renderCommonEducation())}
+            ${getSectionHTML('Projects', renderCommonProjects())}
+            ${getSectionHTML('Certifications', renderCommonCertifications())}
+            ${renderCommonCustom()}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderInfographicTemplate(p, padding) {
+      return `
+        <div class="template-infographic">
+          <div style="background:#f8fafc; padding:1.25rem; border-radius:8px; border:1px solid #e2e8f0;">
+            ${p.photo ? `<img src="${escapeAttr(p.photo)}" style="width:100%; height:auto; border-radius:8px; margin-bottom:1rem;" alt="Profile"/>` : ''}
+            <div style="font-weight:800; font-size:1.2rem; color:#0f172a;">${escapeXml(p.fullName || 'Your Name')}</div>
+            <div style="color:var(--accent-color); font-weight:600; font-size:0.85rem; margin-bottom:1rem;">${escapeXml(p.jobTitle || 'Role')}</div>
+            <div style="font-size:0.8rem; color:#475569;">
+              ${p.email ? `<div>${escapeXml(p.email)}</div>` : ''}
+              ${p.phone ? `<div>${escapeXml(p.phone)}</div>` : ''}
+              ${p.location ? `<div>${escapeXml(p.location)}</div>` : ''}
+            </div>
+            ${resumeData.skills.length ? `<div style="margin-top:1.5rem;"><div style="font-weight:700; font-size:0.85rem; border-bottom:2px solid var(--accent-color); padding-bottom:2px; margin-bottom:0.5rem;">Skills</div>${resumeData.skills.map(s => `<div style="font-size:0.8rem; margin-bottom:0.25rem;">${escapeXml(s.name)}</div>`).join('')}</div>` : ''}
+          </div>
+          <div>
+            ${resumeData.summary ? getSectionHTML('Summary', `<p>${escapeXml(resumeData.summary)}</p>`) : ''}
+            ${getSectionHTML('Experience', renderCommonExperience())}
+            ${getSectionHTML('Education', renderCommonEducation())}
+            ${getSectionHTML('Projects', renderCommonProjects())}
+            ${renderCommonCustom()}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMinimalGridTemplate(p, padding) {
+      return `
+        <div class="template-minimal-grid">
+          <div>
+            <div style="font-size:2rem; font-weight:800; color:#0f172a;">${escapeXml(p.fullName || 'Your Name')}</div>
+            <div style="font-size:1rem; color:var(--accent-color); font-weight:600; margin-bottom:1rem;">${escapeXml(p.jobTitle || 'Profession')}</div>
+            ${resumeData.summary ? `<p style="font-size:0.85rem; color:#475569; margin-bottom:1.5rem;">${escapeXml(resumeData.summary)}</p>` : ''}
+            ${getSectionHTML('Work Experience', renderCommonExperience())}
+            ${getSectionHTML('Projects', renderCommonProjects())}
+          </div>
+          <div>
+            <div style="font-size:0.85rem; color:#64748b; margin-bottom:1.5rem; text-align:right;">${escapeXml(p.email || '')}<br/>${escapeXml(p.phone || '')}<br/>${escapeXml(p.location || '')}</div>
+            ${getSectionHTML('Education', renderCommonEducation())}
+            ${getSectionHTML('Skills', renderCommonSkills())}
+            ${getSectionHTML('Certifications', renderCommonCertifications())}
+            ${getSectionHTML('Languages', renderCommonLanguages())}
+            ${renderCommonCustom()}
+          </div>
         </div>
       `;
     }
