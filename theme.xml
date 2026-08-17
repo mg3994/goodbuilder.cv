@@ -30,6 +30,8 @@
   <link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&amp;family=Montserrat:wght@400;500;600;700&amp;family=Open+Sans:wght@400;500;600;700&amp;family=Poppins:wght@400;500;600;700&amp;family=Roboto:wght@400;500;700&amp;display=swap' rel='stylesheet'/>
   <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' rel='stylesheet'/>
 
+  <!-- QR Code & html2pdf.js Bundle -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- html2pdf.js Bundle for PDF generation -->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'></script>
 
@@ -474,6 +476,8 @@
         <button class='editor-tab-btn' onclick='switchTab("hobbies")'><i class='fa-solid fa-heart'></i> Hobbies</button>
         <button class='editor-tab-btn' onclick='switchTab("custom")'><i class='fa-solid fa-folder-plus'></i> Custom</button>
 
+        <button class='editor-tab-btn' onclick='switchTab("coverletter")'><i class='fa-solid fa-envelope-open-text'></i> Cover Letter</button>
+        <button class='editor-tab-btn' onclick='switchTab("ats")'><i class='fa-solid fa-chart-line'></i> ATS Score</button>
         <button class='editor-tab-btn' onclick='switchTab("studio")'><i class='fa-solid fa-palette'></i> Studio</button>
       </nav>
 
@@ -616,6 +620,42 @@
           <div id='custom-sections-list'></div>
         </div>
 
+                <!-- Tab 14: Cover Letter Builder -->
+        <div class='tab-pane' id='tab-coverletter'>
+          <div class='section-title'>Cover Letter Builder</div>
+          <div class='form-group'>
+            <label>Recipient Name / Title</label>
+            <input id='cl-recipient' type='text' placeholder='Hiring Manager / Jane Smith' oninput='updateCoverLetter()'/>
+          </div>
+          <div class='form-group'>
+            <label>Company Name &amp; Address</label>
+            <input id='cl-company' type='text' placeholder='Acme Corp, San Francisco, CA' oninput='updateCoverLetter()'/>
+          </div>
+          <div class='form-group'>
+            <label>Opening Salutation</label>
+            <input id='cl-salutation' type='text' placeholder='Dear Hiring Manager,' oninput='updateCoverLetter()'/>
+          </div>
+          <div class='form-group'>
+            <label>Cover Letter Content Body</label>
+            <textarea id='cl-body' rows='8' placeholder='I am writing to express my strong interest in the Lead Software Engineer position...' oninput='updateCoverLetter()'></textarea>
+          </div>
+          <div class='form-group'>
+            <label>Closing Sign-off</label>
+            <input id='cl-closing' type='text' placeholder='Sincerely, Alex Morgan' oninput='updateCoverLetter()'/>
+          </div>
+        </div>
+
+        <!-- Tab 15: ATS Compatibility Score & Feedback -->
+        <div class='tab-pane' id='tab-ats'>
+          <div class='section-title'>ATS Optimization Score</div>
+          <div style='background:#f8fafc; border:1px solid #e2e8f0; border-radius:0.5rem; padding:1.25rem; margin-bottom:1.25rem; text-align:center;'>
+            <div style='font-size:0.85rem; color:#64748b; font-weight:600;'>COMPATIBILITY RATING</div>
+            <div id='ats-score-display' style='font-size:3rem; font-weight:800; color:#2563eb; margin:0.25rem 0;'>85%</div>
+            <div id='ats-score-badge' style='display:inline-block; font-size:0.75rem; font-weight:700; background:#dbeafe; color:#1e40af; padding:3px 10px; border-radius:12px;'>Strong ATS Match</div>
+          </div>
+          <div style='font-weight:700; font-size:0.9rem; margin-bottom:0.75rem; color:#0f172a;'>Optimization Checklist &amp; Tips</div>
+          <div id='ats-checklist-items'></div>
+        </div>
         <!-- Tab 13: Custom Template Studio -->
         <div class='tab-pane' id='tab-studio'>
           <div class='section-title'>Custom Template Studio</div>
@@ -1029,6 +1069,14 @@
     }
 
     function syncFormFields() {
+      if (resumeData.coverLetter) {
+        document.getElementById("cl-recipient").value = resumeData.coverLetter.recipient || "";
+        document.getElementById("cl-company").value = resumeData.coverLetter.company || "";
+        document.getElementById("cl-salutation").value = resumeData.coverLetter.salutation || "";
+        document.getElementById("cl-body").value = resumeData.coverLetter.body || "";
+        document.getElementById("cl-closing").value = resumeData.coverLetter.closing || "";
+      }
+
       document.getElementById('personal-fullName').value = resumeData.personal.fullName || '';
       document.getElementById('personal-jobTitle').value = resumeData.personal.jobTitle || '';
       document.getElementById('personal-email').value = resumeData.personal.email || '';
@@ -1609,7 +1657,66 @@
       }).join("");
     }
 
-    function renderAllLists() { renderSectionOrderManager();
+
+    function calculateATSScore() {
+      let score = 0;
+      let checklist = [];
+
+      const p = resumeData.personal;
+      if (p.fullName && p.fullName.trim().length > 2) { score += 10; checklist.push({ pass: true, text: "Full Name provided" }); }
+      else { checklist.push({ pass: false, text: "Add your Full Name" }); }
+
+      if (p.email && p.email.includes("@")) { score += 10; checklist.push({ pass: true, text: "Valid Email address provided" }); }
+      else { checklist.push({ pass: false, text: "Add a valid Email address" }); }
+
+      if (p.phone && p.phone.trim().length > 5) { score += 10; checklist.push({ pass: true, text: "Phone number included" }); }
+      else { checklist.push({ pass: false, text: "Add a Phone number" }); }
+
+      if (resumeData.summary && resumeData.summary.length > 50) { score += 15; checklist.push({ pass: true, text: "Professional Summary is detailed" }); }
+      else { checklist.push({ pass: false, text: "Expand Professional Summary to at least 50 characters" }); }
+
+      if (resumeData.experience && resumeData.experience.length >= 2) { score += 20; checklist.push({ pass: true, text: "Work Experience has 2+ detailed entries" }); }
+      else { checklist.push({ pass: false, text: "Add at least 2 Work Experience entries" }); }
+
+      if (resumeData.skills && resumeData.skills.length >= 5) { score += 15; checklist.push({ pass: true, text: "Key Skills section has 5+ items" }); }
+      else { checklist.push({ pass: false, text: "List at least 5 key Technical or Soft Skills" }); }
+
+      if (resumeData.education && resumeData.education.length >= 1) { score += 10; checklist.push({ pass: true, text: "Education history included" }); }
+      else { checklist.push({ pass: false, text: "Add Education history" }); }
+
+      if (resumeData.projects && resumeData.projects.length >= 1) { score += 10; checklist.push({ pass: true, text: "Projects / Achievements included" }); }
+      else { checklist.push({ pass: false, text: "Include at least 1 Project or key achievement" }); }
+
+      const display = document.getElementById("ats-score-display");
+      const badge = document.getElementById("ats-score-badge");
+      const container = document.getElementById("ats-checklist-items");
+
+      if (display && container) {
+        display.innerText = score + "%";
+        if (score >= 80) { badge.innerText = "High ATS Match"; badge.style.background = "#dcfce7"; badge.style.color = "#166534"; }
+        else if (score >= 50) { badge.innerText = "Moderate ATS Match"; badge.style.background = "#fef9c3"; badge.style.color = "#854d0e"; }
+        else { badge.innerText = "Needs Optimization"; badge.style.background = "#fee2e2"; badge.style.color = "#991b1b"; }
+
+        container.innerHTML = checklist.map(c => `
+          <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; margin-bottom:0.5rem;">
+            <i class="fa-solid ${c.pass ? "fa-circle-check" : "fa-circle-xmark"}" style="color:${c.pass ? "#10b981" : "#ef4444"};"></i>
+            <span style="color:${c.pass ? "#334155" : "#991b1b"};">${escapeXml(c.text)}</span>
+          </div>
+        `).join("");
+      }
+    }
+
+    function updateCoverLetter() {
+      if (!resumeData.coverLetter) resumeData.coverLetter = {};
+      resumeData.coverLetter.recipient = document.getElementById("cl-recipient").value;
+      resumeData.coverLetter.company = document.getElementById("cl-company").value;
+      resumeData.coverLetter.salutation = document.getElementById("cl-salutation").value;
+      resumeData.coverLetter.body = document.getElementById("cl-body").value;
+      resumeData.coverLetter.closing = document.getElementById("cl-closing").value;
+      saveToLocalStorage();
+    }
+
+    function renderAllLists() { calculateATSScore(); renderSectionOrderManager();
       renderExperienceList(); renderEducationList(); renderSkillsList(); renderProjectsList();
       renderLanguagesList(); renderCertificationsList(); renderSocialsList(); renderReferencesList();
       renderHobbiesList(); renderCustomSectionsList();
@@ -1767,6 +1874,71 @@
     }
 
     // MAIN RESUME RENDER ENGINE
+
+    function renderQRCodeElement() {
+      const url = resumeData.personal.website || (resumeData.socials.length ? resumeData.socials[0].url : "");
+      if (!url) return "";
+      return `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin-top:1rem; padding:0.5rem; background:#fff; border-radius:6px; width:fit-content; border:1px solid #e2e8f0;">
+        <div id="qrcode-canvas" style="width:70px; height:70px;"></div>
+        <span style="font-size:0.65rem; color:#64748b; font-weight:600; margin-top:4px;">Scan Portfolio</span>
+      </div>`;
+    }
+
+    function generateQRCodeImage() {
+      setTimeout(() => {
+        const qrBox = document.getElementById("qrcode-canvas");
+        if (qrBox && typeof QRCode !== "undefined") {
+          qrBox.innerHTML = "";
+          const url = resumeData.personal.website || (resumeData.socials.length ? resumeData.socials[0].url : "");
+          if (url) {
+            new QRCode(qrBox, {
+              text: url,
+              width: 70,
+              height: 70,
+              colorDark: "#0f172a",
+              colorLight: "#ffffff",
+              correctLevel: QRCode.CorrectLevel.M
+            });
+          }
+        }
+      }, 100);
+    }
+
+
+    function renderCoverLetterTemplate(p, padding) {
+      const cl = resumeData.coverLetter || { recipient: "Hiring Manager", company: "Company Name", salutation: "Dear Hiring Manager,", body: "Cover letter body content...", closing: "Sincerely,\n" + (p.fullName || "Your Name") };
+      return `
+        <div style="padding:${padding}; min-height:297mm; display:flex; flex-direction:column; justify-space-between;">
+          <div style="border-bottom:2px solid var(--accent-color); padding-bottom:1.5rem; margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:2.2rem; font-weight:800; color:#0f172a;">${escapeXml(p.fullName || "Your Name")}</div>
+              <div style="font-size:1.1rem; color:var(--accent-color); font-weight:600;">${escapeXml(p.jobTitle || "Profession")}</div>
+            </div>
+            <div style="text-align:right; font-size:0.85rem; color:#475569;">
+              ${p.email ? `<div>${escapeXml(p.email)}</div>` : ""}
+              ${p.phone ? `<div>${escapeXml(p.phone)}</div>` : ""}
+              ${p.location ? `<div>${escapeXml(p.location)}</div>` : ""}
+              ${p.website ? `<div>${escapeXml(p.website)}</div>` : ""}
+            </div>
+          </div>
+
+          <div style="font-size:0.9rem; color:#334155; line-height:1.7; flex:1;">
+            <div style="margin-bottom:1.5rem; font-weight:600;">
+              <div>Date: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</div>
+              <div style="margin-top:0.5rem; font-weight:700; color:#0f172a;">To: ${escapeXml(cl.recipient || "Hiring Manager")}</div>
+              <div>${escapeXml(cl.company || "Company")}</div>
+            </div>
+
+            <div style="font-weight:700; font-size:1rem; margin-bottom:1rem; color:#0f172a;">${escapeXml(cl.salutation || "Dear Hiring Manager,")}</div>
+
+            <div style="white-space:pre-line; margin-bottom:2rem; text-align:justify;">${escapeXml(cl.body || "")}</div>
+
+            <div style="white-space:pre-line; font-weight:600; color:#0f172a;">${escapeXml(cl.closing || "Sincerely,\n" + (p.fullName || ""))}</div>
+          </div>
+        </div>
+      `;
+    }
+
     function renderResume() {
       const container = document.getElementById('resume-preview');
       const settings = resumeData.settings;
@@ -1805,6 +1977,7 @@
       }
 
       container.innerHTML = html;
+      generateQRCodeImage();
     }
 
     function renderStudioCustomTemplate(t, p) {
