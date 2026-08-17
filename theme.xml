@@ -16,6 +16,7 @@
   </b:if>
 
   <meta content="8460e5372c3ea4922948a239c40689ec" name="monetag"/>
+  <script async="async" data-cfasync="false" data-zone="270928" src="https://quge5.com/88/tag.min.js"></script>
   <b:include data='blog' name='all-head-content'/>
 
   <b:if cond='!data:blog.adultContent'>
