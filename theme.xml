@@ -644,6 +644,12 @@
             <input id='custom-template-file-input' style='display:none;' type='file' accept='.json' onchange='importCustomTemplate(event)'/>
           </div>
 
+          <div style='margin-top:1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1rem;'>
+            <div style='font-weight:700; font-size:0.95rem; margin-bottom:0.5rem; color:#0f172a;'><i class="fa-solid fa-arrows-up-down"></i> Section Placement &amp; Layout Manager</div>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:0.75rem;">Reorder sections to customize text placement on your template:</p>
+            <div id="section-order-manager-list"></div>
+          </div>
+
           <div style='margin-top:1.5rem;'>
             <div style='font-weight:700; font-size:0.9rem; margin-bottom:0.5rem; color:#0f172a;'>Your Custom Templates Library</div>
             <div id='custom-templates-library'></div>
@@ -756,7 +762,7 @@
       references: [],
       hobbies: [],
       customSections: [],
-      settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
+      sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
     };
 
     let userCustomTemplates = [];
@@ -848,7 +854,7 @@
           items: [{ id: 'citem1', title: 'Coding Mentor', subtitle: 'Code.org', date: '2020 - Present', location: 'Remote', description: 'Volunteered 5 hours weekly teaching Web Development to aspiring developers.' }]
         }
       ],
-      settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
+      sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
     };
 
     function generateId() { return '_' + Math.random().toString(36).substr(2, 9); }
@@ -903,7 +909,7 @@
           personal: { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '', photo: '' },
           summary: '', experience: [], education: [], skills: [], projects: [], languages: [], certifications: [],
           socials: [], references: [], hobbies: [], customSections: [],
-          settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
+          sectionOrder: ['summary', 'experience', 'education', 'skills', 'projects', 'languages', 'certifications', 'socials', 'references', 'hobbies', 'custom'], settings: { template: 'modern', accentColor: '#2563eb', fontFamily: 'Inter', fontSize: '14px', margin: 'normal' }
         };
         syncFormFields();
         renderAllLists();
@@ -959,7 +965,17 @@
 
     function downloadStandaloneHTML() {
       const resumeContent = document.getElementById('resume-preview').innerHTML;
-      const customCss = document.getElementById('custom-template-style-element').innerHTML;
+      const customCss = document.getElementById("custom-template-style-element").innerHTML;
+      let baseCss = "";
+      try {
+        for (let sheet of document.styleSheets) {
+          try {
+            for (let rule of sheet.cssRules) {
+              baseCss += rule.cssText + "\n";
+            }
+          } catch(e) {}
+        }
+      } catch(e) {}
       const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
@@ -968,6 +984,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
   <style>
+    ${baseCss}
     body { margin: 0; padding: 2rem; background: #f8fafc; font-family: '${resumeData.settings.fontFamily || 'Inter'}', sans-serif; }
     .cv-link { color: ${resumeData.settings.accentColor || '#2563eb'}; text-decoration: underline; word-break: break-all; }
     .resume-paper { background: #ffffff; width: 210mm; min-height: 297mm; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); box-sizing: border-box; }
@@ -1524,7 +1541,73 @@
       }
     }
 
-    function renderAllLists() {
+        function renderSectionOrderManager() {
+      const container = document.getElementById("section-order-manager-list");
+      if (!container) return;
+      container.innerHTML = "";
+      if (!resumeData.sectionOrder) {
+        resumeData.sectionOrder = ["summary", "experience", "education", "skills", "projects", "languages", "certifications", "socials", "references", "hobbies", "custom"];
+      }
+      const names = {
+        summary: "Professional Summary",
+        experience: "Work Experience",
+        education: "Education",
+        skills: "Skills & Expertise",
+        projects: "Projects",
+        languages: "Languages",
+        certifications: "Certifications",
+        socials: "Social & Web Links",
+        references: "References",
+        hobbies: "Hobbies",
+        custom: "Custom Sections"
+      };
+      resumeData.sectionOrder.forEach((secKey, index) => {
+        const item = document.createElement("div");
+        item.style.cssText = "background:#f8fafc; border:1px solid #cbd5e1; padding:0.5rem 0.75rem; border-radius:0.375rem; margin-bottom:0.35rem; display:flex; justify-content:space-between; align-items:center;";
+        item.innerHTML = `
+          <span style="font-size:0.85rem; font-weight:600; color:#334155;"><i class="fa-solid fa-grip-vertical" style="color:#94a3b8; margin-right:0.5rem;"></i>${names[secKey] || secKey}</span>
+          <div class="entry-actions">
+            <button class="btn btn-outline btn-sm" onclick="moveSectionOrder(${index}, -1)"><i class="fa-solid fa-arrow-up"></i></button>
+            <button class="btn btn-outline btn-sm" onclick="moveSectionOrder(${index}, 1)"><i class="fa-solid fa-arrow-down"></i></button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function moveSectionOrder(index, direction) {
+      if (!resumeData.sectionOrder) return;
+      const targetIndex = index + direction;
+      if (targetIndex >= 0 && targetIndex < resumeData.sectionOrder.length) {
+        const temp = resumeData.sectionOrder[index];
+        resumeData.sectionOrder[index] = resumeData.sectionOrder[targetIndex];
+        resumeData.sectionOrder[targetIndex] = temp;
+        renderSectionOrderManager();
+        saveToLocalStorage();
+        renderResume();
+      }
+    }
+
+    function renderOrderedSectionsHTML() {
+      if (!resumeData.sectionOrder) {
+        resumeData.sectionOrder = ["summary", "experience", "education", "skills", "projects", "languages", "certifications", "socials", "references", "hobbies", "custom"];
+      }
+      return resumeData.sectionOrder.map(secKey => {
+        if (secKey === "summary" && resumeData.summary) return getSectionHTML("Executive Summary", `<p style="margin:0; color:#334155;">${escapeXml(resumeData.summary)}</p>`);
+        if (secKey === "experience") return getSectionHTML("Work Experience", renderCommonExperience());
+        if (secKey === "education") return getSectionHTML("Education", renderCommonEducation());
+        if (secKey === "skills") return getSectionHTML("Skills & Expertise", renderCommonSkills());
+        if (secKey === "projects") return getSectionHTML("Projects", renderCommonProjects());
+        if (secKey === "languages") return getSectionHTML("Languages", renderCommonLanguages());
+        if (secKey === "certifications") return getSectionHTML("Certifications", renderCommonCertifications());
+        if (secKey === "socials") return getSectionHTML("Links & Profiles", renderCommonSocials());
+        if (secKey === "references") return getSectionHTML("References", renderCommonReferences());
+        if (secKey === "custom") return renderCommonCustom();
+        return "";
+      }).join("");
+    }
+
+    function renderAllLists() { renderSectionOrderManager();
       renderExperienceList(); renderEducationList(); renderSkillsList(); renderProjectsList();
       renderLanguagesList(); renderCertificationsList(); renderSocialsList(); renderReferencesList();
       renderHobbiesList(); renderCustomSectionsList();
