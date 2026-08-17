@@ -412,9 +412,47 @@
       .preview-panel { background: transparent !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
       .resume-paper { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; page-break-after: avoid; }
     }
+
+    /* Post & Page Reader Styling */
+    .blogger-page-wrapper {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .blogger-post-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 1rem;
+      border-bottom: 3px solid #2563eb;
+      padding-bottom: 0.5rem;
+    }
+    .blogger-post-body {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: #334155;
+    }
+    .error-container {
+      text-align: center;
+      padding: 4rem 1.5rem;
+      max-width: 600px;
+      margin: 3rem auto;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .error-code { font-size: 5rem; font-weight: 900; color: #ef4444; line-height: 1; }
+    .error-title { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 1rem 0 0.5rem 0; }
+
   ]]></b:skin>
 </head>
 <body>
+
+  <!-- 1. HOMEPAGE VIEW: FULL CV BUILDER SPA -->
+  <b:if cond='data:view.isHomepage'>
 
   <!-- Required Blogger Section Container -->
   <div class='blogger-hidden-section'>
@@ -2647,6 +2685,67 @@
 
     //]]>
   </script>
+
+  </b:if>
+
+  <!-- 2. POST & PAGE VIEW: BLOG POSTS AND STATIC PAGES -->
+  <b:if cond='data:view.isPost or data:view.isPage'>
+    <header class='app-header'>
+      <div class='header-left'>
+        <a class='app-brand' expr:href='data:blog.homepageUrl'>
+          <i class='fa-solid fa-file-signature'></i>
+          <span>Good Builder CV</span>
+          <span class='domain-badge'>goodbuilder.cv</span>
+        </a>
+        <nav class='legal-nav'>
+          <a expr:href='data:blog.canonicalHomepageUrl + "p/privacy-policy.html"'>Privacy Policy</a>
+          <a expr:href='data:blog.canonicalHomepageUrl + "p/terms.html"'>Terms</a>
+          <a expr:href='data:blog.canonicalHomepageUrl + "p/about.html"'>About</a>
+          <a expr:href='data:blog.canonicalHomepageUrl + "p/contact.html"'>Contact</a>
+        </nav>
+      </div>
+      <div class='header-actions'>
+        <a class='btn btn-primary btn-sm' expr:href='data:blog.homepageUrl'>
+          <i class='fa-solid fa-wand-magic-sparkles'></i> Launch CV Builder
+        </a>
+      </div>
+    </header>
+
+    <div class='blogger-page-wrapper'>
+      <b:section id='page-main' class='page-main' showaddelement='yes'>
+        <b:widget id='Blog2' locked='true' title='Blog Posts' type='Blog'>
+          <b:includable id='main'>
+            <b:loop values='data:posts' var='post'>
+              <article class='blogger-post-item'>
+                <h1 class='blogger-post-title'><data:post.title/></h1>
+                <div class='blogger-post-body'>
+                  <data:post.body/>
+                </div>
+              </article>
+            </b:loop>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+  </b:if>
+
+  <!-- 3. ERROR PAGE VIEW: 404 PAGE NOT FOUND -->
+  <b:if cond='data:view.isError'>
+    <header class='app-header'>
+      <a class='app-brand' expr:href='data:blog.homepageUrl'>
+        <i class='fa-solid fa-file-signature'></i>
+        <span>Good Builder CV</span>
+      </a>
+    </header>
+    <div class='error-container'>
+      <div class='error-code'>404</div>
+      <h1 class='error-title'>Page Not Found</h1>
+      <p style='color:#64748b; margin-bottom:1.5rem;'>The page you are looking for does not exist or has been moved.</p>
+      <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>
+        <i class='fa-solid fa-arrow-left'></i> Return to Homepage CV Builder
+      </a>
+    </div>
+  </b:if>
 
 </body>
 </html>
